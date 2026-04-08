@@ -1,0 +1,79 @@
+{% extends 'luxair/base.html' %}
+{% block title %}Resumen de Compra — LUX AIR{% endblock %}
+{% block content %}
+<div style="max-width:800px;margin:5rem auto;padding:0 2rem">
+  <h2 style="font-family:var(--font-serif);font-size:2rem;margin-bottom:2rem">
+    Resumen de tu compra ✦
+  </h2>
+
+  <!-- VUELO -->
+  <div class="card" style="padding:2rem;margin-bottom:1.5rem">
+    <h3 style="font-family:var(--font-serif);font-size:1.2rem;margin-bottom:1rem;color:var(--rose-dark)">Vuelo de ida</h3>
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div style="text-align:center">
+        <div style="font-family:var(--font-serif);font-size:2rem">{{ vuelo_ida.origen.codigo_iata }}</div>
+        <div style="font-size:.8rem;color:var(--text-muted)">{{ vuelo_ida.origen.ciudad }}</div>
+        <div style="font-weight:500">{{ vuelo_ida.fecha_salida|time:"H:i" }}</div>
+      </div>
+      <div style="color:var(--gold);font-size:1.5rem">✈</div>
+      <div style="text-align:center">
+        <div style="font-family:var(--font-serif);font-size:2rem">{{ vuelo_ida.destino.codigo_iata }}</div>
+        <div style="font-size:.8rem;color:var(--text-muted)">{{ vuelo_ida.destino.ciudad }}</div>
+        <div style="font-weight:500">{{ vuelo_ida.fecha_llegada|time:"H:i" }}</div>
+      </div>
+    </div>
+    <div style="margin-top:1rem;font-size:.85rem;color:var(--text-muted)">
+      Vuelo LX{{ vuelo_ida.numero_vuelo }} · {{ vuelo_ida.fecha_salida|date:"d M Y" }} · Clase {{ clase|title }}
+    </div>
+  </div>
+
+  <!-- PASAJEROS -->
+  <div class="card" style="padding:2rem;margin-bottom:1.5rem">
+    <h3 style="font-family:var(--font-serif);font-size:1.2rem;margin-bottom:1rem;color:var(--rose-dark)">
+      Pasajeros ({{ num_pasajeros }})
+    </h3>
+    {% for p in pasajeros_data %}
+    <div style="padding:.75rem 0;border-bottom:1px solid var(--border);font-size:.9rem">
+      <strong>{{ p.nombre }} {{ p.apellido_paterno }}</strong>
+      <span style="color:var(--text-muted);margin-left:.5rem">{{ p.tipo|title }}</span>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- DESGLOSE DE PRECIOS -->
+  <div class="card" style="padding:2rem;margin-bottom:1.5rem">
+    <h3 style="font-family:var(--font-serif);font-size:1.2rem;margin-bottom:1rem;color:var(--rose-dark)">
+      Detalles de pago
+    </h3>
+    <div style="display:flex;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid var(--border);font-size:.9rem">
+      <span style="color:var(--text-muted)">Subtotal vuelo ({{ num_pasajeros }} pasajero{{ num_pasajeros|pluralize }})</span>
+      <span>${{ subtotal|floatformat:2 }}</span>
+    </div>
+    {% if tua_total > 0 %}
+    <div style="display:flex;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid var(--border);font-size:.9rem">
+      <span style="color:var(--text-muted)">TUA</span>
+      <span>${{ tua_total|floatformat:2 }}</span>
+    </div>
+    {% endif %}
+    {% if extras_total > 0 %}
+    <div style="display:flex;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid var(--border);font-size:.9rem">
+      <span style="color:var(--text-muted)">Equipaje extra ({{ equipaje_extra }} maleta{{ equipaje_extra|pluralize }})</span>
+      <span>${{ extras_total|floatformat:2 }}</span>
+    </div>
+    {% endif %}
+    <div style="display:flex;justify-content:space-between;padding:.75rem 0;font-family:var(--font-serif);font-size:1.2rem;font-weight:600">
+      <span>Total</span>
+      <span style="color:var(--rose-dark)">${{ total|floatformat:2 }} MXN</span>
+    </div>
+  </div>
+
+  <div style="display:flex;gap:1rem">
+    <a href="{% url 'datos_pasajeros' %}" class="btn" style="flex:1;padding:.9rem;text-align:center;border:2.5px solid #8B6000;color:#5A3200;font-weight:600;letter-spacing:.06em;border-radius:50px;background:transparent">
+  ← Regresar
+</a>
+    <a href="{% url 'pago' %}" class="btn btn-gold" style="flex:2;padding:.9rem;text-align:center;font-size:1rem">
+      Proceder al pago ›
+    </a>
+  </div>
+</div>
+{% endblock %}

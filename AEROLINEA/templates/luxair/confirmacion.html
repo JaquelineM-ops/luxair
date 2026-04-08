@@ -1,0 +1,169 @@
+{% extends 'luxair/base.html' %}
+{% block title %}Confirmación — LUX AIR{% endblock %}
+{% block extra_css %}
+<style>
+.confirm-page { padding: 4rem 2rem; max-width: 800px; margin: 0 auto; }
+.confirm-hero {
+  text-align: center; margin-bottom: 3rem;
+  padding: 3rem; background: linear-gradient(135deg, var(--plum) 0%, var(--rose-dark) 100%);
+  border-radius: 20px; color: var(--white); position: relative; overflow: hidden;
+}
+.confirm-hero::before {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 70% 30%, rgba(200,169,110,.2) 0%, transparent 60%);
+}
+.confirm-check { font-size: 3.5rem; margin-bottom: 1rem; position: relative; }
+.confirm-title { font-family: var(--font-serif); font-size: 2.2rem; font-weight: 300; position: relative; }
+.confirm-code { font-size: .85rem; color: rgba(247,232,212,.6); margin-top: .5rem; position: relative; letter-spacing: .12em; }
+
+/* BOLETO */
+.boleto {
+  background: var(--white); border-radius: 20px;
+  box-shadow: var(--shadow-lg); margin-bottom: 1.5rem;
+  overflow: hidden; position: relative;
+}
+.boleto::before {
+  content: ''; position: absolute;
+  left: 50%; top: -1px; bottom: -1px; width: 1px;
+  background: repeating-linear-gradient(to bottom, var(--border) 0, var(--border) 8px, transparent 8px, transparent 16px);
+}
+.boleto-grid { display: grid; grid-template-columns: 2fr 1fr; }
+.boleto-main { padding: 2rem; }
+.boleto-logo {
+  font-family: var(--font-serif); font-size: 1.5rem; font-weight: 600;
+  color: var(--rose-dark); letter-spacing: .12em; margin-bottom: 1.5rem;
+}
+.boleto-logo span { color: var(--gold); }
+.boleto-ruta { display: flex; align-items: center; gap: 1.5rem; margin-bottom: 1.5rem; }
+.boleto-ciudad { font-size: .75rem; color: var(--text-muted); }
+.boleto-iata { font-family: var(--font-serif); font-size: 3rem; font-weight: 300; color: var(--midnight); line-height: 1; }
+.boleto-arrow { font-size: 1.5rem; color: var(--gold); flex-shrink: 0; }
+.boleto-details { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; }
+.boleto-field label { font-size: .65rem; text-transform: uppercase; letter-spacing: .1em; color: var(--text-muted); display: block; margin-bottom: .2rem; }
+.boleto-field span { font-size: .9rem; font-weight: 500; color: var(--text); }
+
+.boleto-stub {
+  padding: 2rem 1.5rem; background: var(--blush);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center; gap: .75rem;
+}
+.boleto-clase {
+  font-family: var(--font-serif); font-size: 1.1rem;
+  color: var(--rose-dark); font-weight: 400;
+}
+.boleto-asiento-num { font-family: var(--font-serif); font-size: 3rem; font-weight: 300; color: var(--rose-dark); line-height: 1; }
+.boleto-asiento-label { font-size: .65rem; text-transform: uppercase; letter-spacing: .1em; color: var(--text-muted); }
+.boleto-qr {
+  width: 80px; height: 80px; background: var(--midnight);
+  border-radius: 6px; display: flex; align-items: center; justify-content: center;
+  color: var(--champagne); font-size: .6rem; text-align: center;
+  letter-spacing: .02em; padding: .5rem;
+}
+.boleto-code { font-size: .7rem; color: var(--text-muted); font-family: monospace; word-break: break-all; }
+
+.actions { display: flex; gap: 1rem; justify-content: center; margin-top: 2rem; }
+</style>
+{% endblock %}
+{% block content %}
+<div class="confirm-page">
+  <div class="confirm-hero">
+    <div class="confirm-check">✦</div>
+    <div class="confirm-title">¡Tu vuelo está confirmado!</div>
+    <div class="confirm-code">Código de reservación: {{ reservacion.codigo|stringformat:"s"|slice:":8"|upper }}</div>
+  </div>
+
+  {% for boleto in boletos %}
+  <div class="boleto">
+    <div class="boleto-grid">
+      <div class="boleto-main">
+        <div class="boleto-logo">LUX<span>✦</span>AIR</div>
+        <div class="boleto-ruta">
+          <div>
+            <div class="boleto-ciudad">{{ boleto.vuelo.origen.ciudad }}</div>
+            <div class="boleto-iata">{{ boleto.vuelo.origen.codigo_iata }}</div>
+          </div>
+          <div class="boleto-arrow">✈</div>
+          <div>
+            <div class="boleto-ciudad">{{ boleto.vuelo.destino.ciudad }}</div>
+            <div class="boleto-iata">{{ boleto.vuelo.destino.codigo_iata }}</div>
+          </div>
+        </div>
+        <div class="boleto-details">
+          <div class="boleto-field">
+            <label>Pasajero</label>
+            <span>{{ boleto.pasajero.nombre_completo }}</span>
+          </div>
+          <div class="boleto-field">
+            <label>Vuelo</label>
+            <span>LX{{ boleto.vuelo.numero_vuelo }}</span>
+          </div>
+          <div class="boleto-field">
+            <label>Fecha</label>
+            <span>{{ boleto.vuelo.fecha_salida|date:"d M Y" }}</span>
+          </div>
+          <div class="boleto-field">
+            <label>Salida</label>
+            <span>{{ boleto.vuelo.fecha_salida|time:"H:i" }}</span>
+          </div>
+          <div class="boleto-field">
+            <label>Llegada</label>
+            <span>{{ boleto.vuelo.fecha_llegada|time:"H:i" }}</span>
+          </div>
+          <div class="boleto-field">
+            <label>Clase</label>
+            <span>{{ boleto.clase|title }}</span>
+          </div>
+        </div>
+      </div>
+      <div class="boleto-stub">
+        <div class="boleto-clase">{{ boleto.clase|title }}</div>
+        <div>
+          <div class="boleto-asiento-label">Asiento</div>
+          <div class="boleto-asiento-num">{{ boleto.asiento }}</div>
+        </div>
+        <div class="boleto-qr">
+          {{ boleto.codigo_boleto|stringformat:"s"|slice:":8"|upper }}
+        </div>
+        <div class="boleto-code">{{ boleto.codigo_boleto }}</div>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+
+  <!-- RESUMEN PAGO -->
+  <div class="card" style="padding:1.5rem;margin-bottom:1.5rem">
+    <h3 style="font-family:var(--font-serif);font-size:1.2rem;margin-bottom:1rem;color:var(--midnight)">Detalles del pago</h3>
+    <div style="display:flex;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid var(--border);font-size:.9rem">
+      <span style="color:var(--text-muted)">Subtotal vuelo</span>
+      <span>${{ reservacion.subtotal|floatformat:2 }}</span>
+    </div>
+    {% if reservacion.tua_total > 0 %}
+    <div style="display:flex;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid var(--border);font-size:.9rem">
+      <span style="color:var(--text-muted)">TUA</span>
+      <span>${{ reservacion.tua_total|floatformat:2 }}</span>
+    </div>
+    {% endif %}
+    {% if reservacion.extras_total > 0 %}
+    <div style="display:flex;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid var(--border);font-size:.9rem">
+      <span style="color:var(--text-muted)">Equipaje extra</span>
+      <span>${{ reservacion.extras_total|floatformat:2 }}</span>
+    </div>
+    {% endif %}
+    <div style="display:flex;justify-content:space-between;padding:.75rem 0;font-weight:600;font-family:var(--font-serif);font-size:1.1rem">
+      <span>Total pagado</span>
+      <span style="color:var(--rose-dark)">${{ reservacion.total|floatformat:2 }} MXN</span>
+    </div>
+    {% if reservacion.tua_opcion == 'despues' %}
+    <div style="background:var(--blush);padding:.75rem 1rem;border-radius:8px;font-size:.82rem;color:var(--rose-dark)">
+      ⚠ Recuerda pagar tu TUA antes del check-in. Puedes hacerlo en mostrador o en línea.
+    </div>
+    {% endif %}
+  </div>
+
+  <div class="actions">
+    <button onclick="window.print()" class="btn btn-outline">🖨 Imprimir boletos</button>
+    <a href="{% url 'mis_boletos' %}" class="btn btn-primary">Mis boletos ›</a>
+    <a href="{% url 'inicio' %}" class="btn btn-gold">Volver al inicio</a>
+  </div>
+</div>
+{% endblock %}

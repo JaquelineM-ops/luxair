@@ -1,0 +1,64 @@
+{% extends 'luxair/base.html' %}
+{% block title %}Pago Grupal — LUX AIR{% endblock %}
+{% block content %}
+<div style="max-width:700px;margin:5rem auto;padding:0 2rem">
+  <h2 style="font-family:var(--font-serif);font-size:2rem;margin-bottom:.5rem;color:#3D1F00">
+    Pago de Reservación Grupal ✦
+  </h2>
+  <p style="color:var(--text-muted);margin-bottom:2rem">Confirma tu pago para reservar tu vuelo grupal.</p>
+
+  <!-- RESUMEN -->
+  <div class="card" style="padding:2rem;margin-bottom:2rem;border:1.5px solid #C8A030">
+    <h3 style="font-family:var(--font-serif);font-size:1.2rem;color:#3D1F00;margin-bottom:1rem">Resumen</h3>
+    <div style="display:flex;justify-content:space-between;font-size:.95rem;margin-bottom:.75rem">
+      <span style="color:var(--text-muted)">Grupo</span>
+      <strong style="color:#3D1F00">{{ reservacion.nombre_grupo }}</strong>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-size:.95rem;margin-bottom:.75rem">
+      <span style="color:var(--text-muted)">Pasajeros</span>
+      <strong style="color:#3D1F00">{{ reservacion.numero_pasajeros }}</strong>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-size:.95rem;margin-bottom:.75rem">
+      <span style="color:var(--text-muted)">Descuento grupal</span>
+      <strong style="color:#27500A">{{ reservacion.descuento_porcentaje }}%</strong>
+    </div>
+    {% if reservacion.notas %}
+    <div style="display:flex;justify-content:space-between;font-size:.95rem;margin-bottom:.75rem">
+      <span style="color:var(--text-muted)">Notas</span>
+      <strong style="color:#3D1F00">{{ reservacion.notas }}</strong>
+    </div>
+    {% endif %}
+    <div style="display:flex;justify-content:space-between;font-size:1.1rem;margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border)">
+      <span style="color:var(--text-muted)">Total a pagar</span>
+      <strong style="color:#8B5A00;font-family:var(--font-serif);font-size:1.4rem">${{ reservacion.precio_cotizado|floatformat:2 }} MXN</strong>
+    </div>
+  </div>
+
+  <!-- FORMULARIO DE PAGO -->
+  <div class="card" style="padding:2rem;border:1.5px solid #C8A030">
+    <h3 style="font-family:var(--font-serif);font-size:1.2rem;color:#3D1F00;margin-bottom:1.5rem">Datos de pago</h3>
+    <form method="POST">
+      {% csrf_token %}
+      <div style="margin-bottom:1.25rem">
+        <label style="font-size:.85rem;color:var(--text-muted);display:block;margin-bottom:.4rem">Método de pago</label>
+        {{ form.metodo }}
+      </div>
+      <div style="margin-bottom:1.25rem">
+        <label style="font-size:.85rem;color:var(--text-muted);display:block;margin-bottom:.4rem">Nombre del titular</label>
+        {{ form.nombre_titular }}
+      </div>
+      <div style="margin-bottom:1.25rem">
+        <label style="font-size:.85rem;color:var(--text-muted);display:block;margin-bottom:.4rem">Últimos 4 dígitos</label>
+        {{ form.ultimos_4 }}
+      </div>
+      {% if form.errors %}
+        <p style="color:#B00020;font-size:.875rem;margin-bottom:1rem">⚠ Verifica los campos.</p>
+      {% endif %}
+      <button type="submit"
+        style="width:100%;padding:.9rem;background:linear-gradient(135deg,#8B5A00,#C8A030);color:#fff;border:none;border-radius:8px;font-size:1rem;font-family:var(--font-serif);cursor:pointer;letter-spacing:.05em">
+        ✦ Confirmar Pago ${{ reservacion.precio_cotizado|floatformat:2 }}
+      </button>
+    </form>
+  </div>
+</div>
+{% endblock %}

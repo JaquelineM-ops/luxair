@@ -1,0 +1,293 @@
+{% extends 'luxair/base.html' %}
+{% block title %}Buscar Vuelos — LUX AIR{% endblock %}
+{% block extra_css %}
+<style>
+.search-hero {
+  background: linear-gradient(135deg, var(--midnight) 0%, var(--plum) 100%);
+  padding: 5rem 2rem 3rem; position: relative; overflow: hidden;
+}
+.search-hero::before {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(ellipse 60% 80% at 60% 50%, rgba(201,118,143,.12) 0%, transparent 60%);
+}
+.search-box {
+  position: relative; z-index: 2;
+  max-width: 900px; margin: 0 auto;
+  background: rgba(250,245,238,.05);
+  border: 1px solid rgba(200,169,110,.25);
+  border-radius: 20px; padding: 2rem;
+  backdrop-filter: blur(20px);
+}
+.search-box-title {
+  font-family: var(--font-serif); font-size: 1.6rem;
+  color: var(--champagne); margin-bottom: 1.5rem; text-align: center;
+}
+.s-label { font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; color: rgba(200,169,110,.8); margin-bottom: .35rem; display: block; }
+.s-input {
+  width: 100%; background: rgba(250,245,238,.07);
+  border: 1px solid rgba(200,169,110,.2); border-radius: 10px;
+  padding: .8rem 1rem; color: var(--champagne);
+  font-family: var(--font-sans); font-size: .9rem; outline: none;
+  transition: border-color .2s;
+}
+.s-input:focus { border-color: var(--rose); background: rgba(250,245,238,.12); }
+.s-input option { background: var(--plum); }
+.s-grid-4 { display: grid; grid-template-columns: 1.5fr 1.5fr 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+.s-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+.trip-toggle { display: flex; gap: .5rem; margin-bottom: 1.25rem; }
+.trip-btn {
+  flex: 1; padding: .5rem; border-radius: 8px;
+  border: 1px solid rgba(200,169,110,.2);
+  background: transparent; color: rgba(247,232,212,.5);
+  font-family: var(--font-sans); font-size: .8rem; cursor: pointer; transition: all .2s;
+}
+.trip-btn.active { background: var(--rose); color: var(--white); border-color: var(--rose); }
+
+/* RESULTADOS */
+.results-section { padding: 3rem 2rem; max-width: 900px; margin: 0 auto; }
+.results-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+.results-title { font-family: var(--font-serif); font-size: 1.6rem; color: var(--midnight); }
+.results-count { font-size: .875rem; color: var(--text-muted); }
+
+.vuelo-card {
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: 16px; padding: 1.5rem;
+  margin-bottom: 1rem; transition: transform .2s, border-color .2s, box-shadow .2s;
+  cursor: pointer;
+}
+.vuelo-card:hover { transform: translateY(-3px); border-color: var(--rose); box-shadow: var(--shadow); }
+.vuelo-main { display: grid; grid-template-columns: 1fr auto 1fr auto auto; align-items: center; gap: 1rem; }
+.vuelo-airport { text-align: center; }
+.vuelo-time {
+  font-family: var(--font-serif); font-size: 2rem; font-weight: 400;
+  color: var(--midnight); line-height: 1;
+}
+.vuelo-iata { font-size: .75rem; color: var(--text-muted); letter-spacing: .06em; margin-top: .2rem; }
+.vuelo-ciudad { font-size: .8rem; color: var(--text); }
+
+.vuelo-middle { text-align: center; }
+.vuelo-duracion { font-size: .75rem; color: var(--text-muted); margin-bottom: .3rem; }
+.vuelo-line {
+  display: flex; align-items: center; gap: .3rem;
+  color: var(--gold);
+}
+.vuelo-line::before, .vuelo-line::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+.vuelo-precios { display: flex; gap: .5rem; }
+.precio-opcion {
+  border: 1.5px solid var(--border); border-radius: 10px;
+  padding: .6rem .9rem; text-align: center;
+  cursor: pointer; transition: all .2s; min-width: 90px;
+}
+.precio-opcion:hover, .precio-opcion.selected { border-color: var(--rose); background: var(--blush); }
+.precio-clase { font-size: .65rem; text-transform: uppercase; letter-spacing: .06em; color: var(--text-muted); }
+.precio-monto { font-family: var(--font-serif); font-size: 1.1rem; color: var(--rose-dark); font-weight: 600; }
+
+.vuelo-seleccionar {
+  background: linear-gradient(135deg, var(--rose) 0%, var(--rose-dark) 100%);
+  color: var(--white); border: none; border-radius: 10px;
+  padding: .7rem 1.25rem; font-family: var(--font-sans); font-size: .85rem;
+  cursor: pointer; white-space: nowrap;
+  transition: transform .2s, box-shadow .2s;
+}
+.vuelo-seleccionar:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(155,77,99,.3); }
+.vuelo-numero { font-size: .75rem; color: var(--text-muted); margin-top: .75rem; }
+
+.empty-state {
+  text-align: center; padding: 4rem 2rem;
+  color: var(--text-muted);
+}
+.empty-icon { font-size: 3rem; margin-bottom: 1rem; opacity: .5; }
+.empty-text { font-family: var(--font-serif); font-size: 1.4rem; color: var(--text); margin-bottom: .5rem; }
+
+/* GRUPAL */
+.grupal-banner {
+  background: linear-gradient(135deg, var(--gold) 0%, #B8944A 100%);
+  border-radius: 16px; padding: 2rem; text-align: center; margin-top: 2rem;
+}
+.grupal-banner h3 { font-family: var(--font-serif); font-size: 1.8rem; color: var(--midnight); margin-bottom: .5rem; }
+.grupal-banner p { color: rgba(26,18,32,.7); margin-bottom: 1.5rem; }
+</style>
+{% endblock %}
+{% block content %}
+
+<!-- BUSCADOR -->
+<section class="search-hero">
+  <div class="search-box">
+    <div class="search-box-title">✈ Encuentra tu vuelo ideal</div>
+    <form method="get">
+      <div class="trip-toggle">
+        <button type="button" class="trip-btn {% if form.tipo_viaje.value != 'redondo' %}active{% endif %}" onclick="setTrip('ida',this)">✈ Solo ida</button>
+        <button type="button" class="trip-btn {% if form.tipo_viaje.value == 'redondo' %}active{% endif %}" onclick="setTrip('redondo',this)">⇄ Vuelo redondo</button>
+      </div>
+      <input type="hidden" name="tipo_viaje" id="tipo_viaje_input" value="{{ form.tipo_viaje.value|default:'ida' }}">
+      <div class="s-grid-4">
+        <div>
+          <label class="s-label">Origen</label>
+          <select name="origen" class="s-input" required>
+            <option value="">¿Desde dónde?</option>
+            {% for a in aeropuertos %}
+              <option value="{{ a.id }}" {% if form.origen.value == a.id|stringformat:"s" %}selected{% endif %}>{{ a.codigo_iata }} — {{ a.ciudad }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div>
+          <label class="s-label">Destino</label>
+          <select name="destino" class="s-input" required>
+            <option value="">¿A dónde?</option>
+            {% for a in aeropuertos %}
+              <option value="{{ a.id }}" {% if form.destino.value == a.id|stringformat:"s" %}selected{% endif %}>{{ a.codigo_iata }} — {{ a.ciudad }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div>
+          <label class="s-label">Salida</label>
+          <input type="date" name="fecha_salida" class="s-input" value="{{ form.fecha_salida.value }}" required>
+        </div>
+        <div>
+          <label class="s-label">Pasajeros</label>
+          <input type="number" name="num_pasajeros" class="s-input" value="{{ form.num_pasajeros.value|default:1 }}" min="1" max="200">
+        </div>
+      </div>
+      <div class="s-grid-2" id="regreso-row" style="display:none">
+        <div>
+          <label class="s-label">Fecha de regreso</label>
+          <input type="date" name="fecha_regreso" class="s-input" id="fecha_regreso_input" value="{{ form.fecha_regreso.value }}">
+        </div>
+      </div>
+      {% if form.errors %}
+        <div style="color:#ff7b9c;font-size:.82rem;margin-bottom:1rem">
+          {% for error in form.non_field_errors %}<div>⚠ {{ error }}</div>{% endfor %}
+        </div>
+      {% endif %}
+      <button type="submit" class="btn btn-gold" style="width:100%;padding:.85rem;font-size:.95rem;border-radius:10px;margin-top:.5rem">
+        Buscar vuelos disponibles ✦
+      </button>
+    </form>
+  </div>
+</section>
+
+<!-- RESULTADOS -->
+{% if es_grupal %}
+<div class="results-section">
+  <div class="grupal-banner">
+    <h3>✦ Vuelo Grupal LUX AIR</h3>
+    <p>Para grupos de más de 8 pasajeros tenemos planes especiales con descuentos, servicios premium y atención personalizada.</p>
+    <a href="{% url 'vuelo_grupal' %}" class="btn btn-primary" style="padding:.85rem 2rem">Solicitar cotización grupal</a>
+  </div>
+</div>
+
+{% elif vuelos_ida %}
+<div class="results-section">
+  <div class="results-header">
+    <div class="results-title">Vuelos disponibles</div>
+    <div class="results-count">{{ vuelos_ida|length }} vuelo{{ vuelos_ida|length|pluralize }} encontrado{{ vuelos_ida|length|pluralize }}</div>
+  </div>
+
+  {% if vuelos_regreso %}
+    <h3 style="font-family:var(--font-serif);font-size:1.2rem;color:var(--text-muted);margin-bottom:1rem">✈ Vuelos de ida</h3>
+  {% endif %}
+
+  {% for vuelo in vuelos_ida %}
+  <div class="vuelo-card" onclick="window.location='/vuelos/seleccionar/{{ vuelo.id }}/'">
+    <div class="vuelo-main">
+      <div class="vuelo-airport">
+        <div class="vuelo-time">{{ vuelo.fecha_salida|time:"H:i" }}</div>
+        <div class="vuelo-iata">{{ vuelo.origen.codigo_iata }}</div>
+        <div class="vuelo-ciudad">{{ vuelo.origen.ciudad }}</div>
+      </div>
+      <div class="vuelo-middle">
+        <div class="vuelo-duracion">Vuelo directo</div>
+        <div class="vuelo-line">✈</div>
+      </div>
+      <div class="vuelo-airport">
+        <div class="vuelo-time">{{ vuelo.fecha_llegada|time:"H:i" }}</div>
+        <div class="vuelo-iata">{{ vuelo.destino.codigo_iata }}</div>
+        <div class="vuelo-ciudad">{{ vuelo.destino.ciudad }}</div>
+      </div>
+      <div class="vuelo-precios">
+        <div class="precio-opcion" onclick="event.stopPropagation(); window.location='/vuelos/seleccionar/{{ vuelo.id }}/?clase=economica'">
+  <div class="precio-clase">Económica</div>
+  <div class="precio-monto">${{ vuelo.precio_economica|floatformat:0 }}</div>
+</div>
+<div class="precio-opcion" onclick="event.stopPropagation(); window.location='/vuelos/seleccionar/{{ vuelo.id }}/?clase=ejecutiva'">
+  <div class="precio-clase">Ejecutiva</div>
+  <div class="precio-monto">${{ vuelo.precio_ejecutiva|floatformat:0 }}</div>
+</div>
+<div class="precio-opcion" onclick="event.stopPropagation(); window.location='/vuelos/seleccionar/{{ vuelo.id }}/?clase=primera_clase'">
+  <div class="precio-clase">1ª Clase</div>
+  <div class="precio-monto">${{ vuelo.precio_primera_clase|floatformat:0 }}</div>
+</div>
+      </div>
+      <a href="{% url 'seleccionar_vuelo' vuelo.id %}" class="vuelo-seleccionar">
+        Seleccionar ›
+      </a>
+    </div>
+    <div class="vuelo-numero">Vuelo LX{{ vuelo.numero_vuelo }} · {{ vuelo.fecha_salida|date:"d M Y" }} · {{ vuelo.estado|title }}</div>
+  </div>
+  {% endfor %}
+
+  {% if vuelos_regreso %}
+  <h3 style="font-family:var(--font-serif);font-size:1.2rem;color:var(--text-muted);margin:2rem 0 1rem">↩ Vuelos de regreso</h3>
+  {% for vuelo in vuelos_regreso %}
+  <div class="vuelo-card">
+    <div class="vuelo-main">
+      <div class="vuelo-airport">
+        <div class="vuelo-time">{{ vuelo.fecha_salida|time:"H:i" }}</div>
+        <div class="vuelo-iata">{{ vuelo.origen.codigo_iata }}</div>
+        <div class="vuelo-ciudad">{{ vuelo.origen.ciudad }}</div>
+      </div>
+      <div class="vuelo-middle">
+        <div class="vuelo-duracion">Vuelo directo</div>
+        <div class="vuelo-line">✈</div>
+      </div>
+      <div class="vuelo-airport">
+        <div class="vuelo-time">{{ vuelo.fecha_llegada|time:"H:i" }}</div>
+        <div class="vuelo-iata">{{ vuelo.destino.codigo_iata }}</div>
+        <div class="vuelo-ciudad">{{ vuelo.destino.ciudad }}</div>
+      </div>
+      <div class="vuelo-precios">
+        <div class="precio-opcion">
+          <div class="precio-clase">Económica</div>
+          <div class="precio-monto">${{ vuelo.precio_economica|floatformat:0 }}</div>
+        </div>
+        <div class="precio-opcion">
+          <div class="precio-clase">Ejecutiva</div>
+          <div class="precio-monto">${{ vuelo.precio_ejecutiva|floatformat:0 }}</div>
+        </div>
+      </div>
+      <button class="vuelo-seleccionar">Seleccionar ›</button>
+    </div>
+    <div class="vuelo-numero">Vuelo LX{{ vuelo.numero_vuelo }} · {{ vuelo.fecha_salida|date:"d M Y" }}</div>
+  </div>
+  {% endfor %}
+  {% endif %}
+</div>
+
+{% elif request.GET.origen %}
+<div class="results-section">
+  <div class="empty-state">
+    <div class="empty-icon">✈</div>
+    <div class="empty-text">Sin vuelos disponibles</div>
+    <p>No encontramos vuelos para esa ruta y fecha. Intenta con otras fechas.</p>
+  </div>
+</div>
+{% endif %}
+
+{% endblock %}
+{% block extra_js %}
+<script>
+function setTrip(tipo, btn) {
+  document.querySelectorAll('.trip-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tipo_viaje_input').value = tipo;
+  const row = document.getElementById('regreso-row');
+  const input = document.getElementById('fecha_regreso_input');
+  if (tipo === 'redondo') { row.style.display = 'grid'; input.required = true; }
+  else { row.style.display = 'none'; input.required = false; input.value = ''; }
+}
+</script>
+{% endblock %}

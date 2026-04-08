@@ -1,0 +1,128 @@
+{% extends "admin/base.html" %}
+
+{% block extrastyle %}
+<style>
+  /* ── HEADER ── */
+  #header {
+    background: linear-gradient(135deg, #3D1F00 0%, #8B5A00 100%) !important;
+    color: #FFF8E7 !important;
+  }
+  #header a:link, #header a:visited {
+    color: #F0D080 !important;
+  }
+  #branding h1 a {
+    color: #D4AF37 !important;
+    font-family: Georgia, serif !important;
+    letter-spacing: .15em !important;
+  }
+
+  /* ── NAV ── */
+  div#nav-global, .navbar {
+    background: #2D1A00 !important;
+  }
+
+  /* ── SIDEBAR / MODULES ── */
+  .module h2, .module caption, .inline-group h2 {
+    background: linear-gradient(135deg, #8B5A00, #C8A030) !important;
+    color: #FFF8E7 !important;
+  }
+
+  /* ── BUTTONS ── */
+  .button, input[type=submit], input[type=button], .submit-row input, a.button {
+    background: linear-gradient(135deg, #C8A030, #8B6000) !important;
+    color: #FFF8E7 !important;
+    border: none !important;
+    border-radius: 50px !important;
+    padding: .5rem 1.5rem !important;
+    font-weight: 600 !important;
+    letter-spacing: .05em !important;
+  }
+  .button:hover, input[type=submit]:hover {
+    background: linear-gradient(135deg, #D4AF37, #9B6A00) !important;
+  }
+
+  /* ── LINKS ── */
+  a:link, a:visited {
+    color: #8B5A00 !important;
+  }
+  a:hover {
+    color: #C8A030 !important;
+  }
+
+  /* ── BREADCRUMBS ── */
+  div.breadcrumbs {
+    background: #2D1A00 !important;
+    color: #F0D080 !important;
+  }
+  div.breadcrumbs a {
+    color: #D4AF37 !important;
+  }
+
+  /* ── BODY ── */
+  body {
+    background: #FFFDF5 !important;
+    font-family: 'Segoe UI', sans-serif !important;
+  }
+
+  /* ── TABLES ── */
+  #result_list thead th {
+    background: #3D1F00 !important;
+    color: #F0D080 !important;
+  }
+  #result_list tr:nth-child(even) {
+    background: #FFF8E7 !important;
+  }
+  #result_list tr:hover {
+    background: rgba(212,175,55,.15) !important;
+  }
+
+  /* ── USER TOOLS ── */
+  #user-tools a {
+    color: #F0D080 !important;
+  }
+  /* ── GENERAL FONT SIZE ── */
+  body, td, th, input, select, textarea {
+    font-size: 15px !important;
+  }
+
+  /* ── USER TOOLS ── */
+  #user-tools {
+    font-size: .95rem !important;
+    font-weight: 600 !important;
+    letter-spacing: .05em !important;
+  }
+  #user-tools strong {
+    color: #D4AF37 !important;
+    font-size: 1.1rem !important;
+    text-shadow: 0 1px 3px rgba(0,0,0,.3) !important;
+    letter-spacing: .1em !important;
+  }
+  #user-tools a {
+    color: #F0D080 !important;
+    font-size: .9rem !important;
+    text-decoration: underline !important;
+    letter-spacing: .08em !important;
+  }
+</style>
+{% endblock %}
+
+{% block branding %}
+<h1 id="site-name">
+  <a href="{% url 'admin:index' %}">✈ LUX AIR — Panel de Administración</a>
+</h1>
+{% endblock %}
+
+{% block usertools %}
+<div id="user-tools">
+  ✦ BIENVENIDA, <strong>{% firstof user.get_short_name user.get_username %}</strong> ✦
+  &nbsp;|&nbsp;
+  <a href="{% url 'admin:password_change' %}">🔑 CAMBIAR CONTRASEÑA</a>
+  &nbsp;|&nbsp;
+  <form method="POST" action="/admin/logout/" style="display:inline">
+    {% csrf_token %}
+    <button type="submit" style="background:linear-gradient(135deg,#C8A030,#8B6000);border:none;color:#FFF8E7;cursor:pointer;font-size:.8rem;font-family:inherit;text-transform:uppercase;letter-spacing:.1em;padding:.4rem 1.25rem;border-radius:50px;font-weight:700">
+      ✦ CERRAR SESIÓN
+    </button>
+  </form>
+</div>
+{% endblock %}

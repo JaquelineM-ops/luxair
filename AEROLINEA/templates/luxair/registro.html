@@ -1,0 +1,115 @@
+{% extends 'luxair/base.html' %}
+{% block title %}Crear cuenta — LUX AIR{% endblock %}
+{% block extra_css %}
+<style>
+.auth-page {
+  min-height: 100vh; display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, var(--midnight) 0%, var(--plum) 100%);
+  padding: 5rem 2rem 3rem;
+  position: relative; overflow: hidden;
+}
+.auth-page::before {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(ellipse 60% 60% at 80% 30%, rgba(201,118,143,.15) 0%, transparent 60%);
+}
+.auth-card {
+  position: relative; z-index: 2;
+  width: 100%; max-width: 600px;
+  background: rgba(250,245,238,.05);
+  border: 1px solid rgba(200,169,110,.2);
+  border-radius: 24px; padding: 3rem 2.5rem;
+  backdrop-filter: blur(30px);
+}
+.auth-logo { font-family: var(--font-serif); font-size: 2rem; font-weight: 600; color: var(--champagne); letter-spacing: .12em; text-align: center; margin-bottom: .5rem; }
+.auth-logo span { color: var(--gold); }
+.auth-subtitle { text-align: center; color: rgba(247,232,212,.5); font-size: .875rem; margin-bottom: 2.5rem; }
+.field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.auth-label { font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; color: rgba(200,169,110,.8); margin-bottom: .35rem; display: block; }
+.auth-input {
+  width: 100%; background: rgba(250,245,238,.06);
+  border: 1px solid rgba(200,169,110,.2); border-radius: 10px;
+  padding: .8rem 1rem; color: var(--champagne);
+  font-family: var(--font-sans); font-size: .875rem; outline: none;
+  transition: border-color .2s; margin-bottom: 1.1rem;
+}
+.auth-input:focus { border-color: var(--rose); background: rgba(250,245,238,.1); }
+.auth-input::placeholder { color: rgba(247,232,212,.25); }
+.auth-btn {
+  width: 100%; padding: .9rem; border-radius: 12px; border: none;
+  background: linear-gradient(135deg, var(--rose) 0%, var(--rose-dark) 100%);
+  color: var(--white); font-family: var(--font-sans); font-size: 1rem; font-weight: 500;
+  cursor: pointer; box-shadow: 0 4px 20px rgba(155,77,99,.3);
+  transition: transform .2s, box-shadow .2s; margin-top: .5rem;
+}
+.auth-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(155,77,99,.4); }
+.field-error { color: #ff7b9c; font-size: .78rem; margin-top: -.8rem; margin-bottom: .9rem; display: block; }
+.auth-link { color: var(--gold); text-decoration: none; }
+.section-divider {
+  font-size: .7rem; letter-spacing: .1em; text-transform: uppercase;
+  color: rgba(200,169,110,.6); margin: 1.25rem 0 .75rem;
+  display: flex; align-items: center; gap: .75rem;
+}
+.section-divider::before, .section-divider::after {
+  content: ''; flex: 1; height: 1px; background: rgba(200,169,110,.15);
+}
+</style>
+{% endblock %}
+{% block content %}
+<div class="auth-page">
+  <div class="auth-card">
+    <div class="auth-logo">LUX<span>✦</span>AIR</div>
+    <div class="auth-subtitle">Crea tu cuenta y vuela diferente</div>
+    <form method="post">
+      {% csrf_token %}
+      <div class="section-divider">Datos personales</div>
+      <div class="field-grid">
+        <div>
+          <label class="auth-label">Nombre(s)</label>
+          <input type="text" name="first_name" class="auth-input" placeholder="Tu nombre" required>
+        </div>
+        <div>
+          <label class="auth-label">Apellidos</label>
+          <input type="text" name="last_name" class="auth-input" placeholder="Tus apellidos" required>
+        </div>
+      </div>
+      <label class="auth-label">Correo electrónico</label>
+      <input type="email" name="email" class="auth-input" placeholder="correo@ejemplo.com" required>
+      <div class="field-grid">
+        <div>
+          <label class="auth-label">Teléfono</label>
+          <input type="tel" name="telefono" class="auth-input" placeholder="+52 55 0000 0000">
+        </div>
+        <div>
+          <label class="auth-label">Fecha de nacimiento</label>
+          <input type="date" name="fecha_nacimiento" class="auth-input">
+        </div>
+      </div>
+      <div class="section-divider">Acceso</div>
+      <label class="auth-label">Usuario</label>
+      <input type="text" name="username" class="auth-input" placeholder="Elige un nombre de usuario" required>
+      <div class="field-grid">
+        <div>
+          <label class="auth-label">Contraseña</label>
+          <input type="password" name="password1" class="auth-input" placeholder="Mínimo 8 caracteres" required>
+        </div>
+        <div>
+          <label class="auth-label">Confirmar contraseña</label>
+          <input type="password" name="password2" class="auth-input" placeholder="Repite tu contraseña" required>
+        </div>
+      </div>
+      {% if form.errors %}
+        <div style="color:#ff7b9c;font-size:.82rem;margin-bottom:1rem;padding:.75rem;border:1px solid rgba(255,123,156,.2);border-radius:8px">
+          {% for field in form %}
+            {% for error in field.errors %}<div>⚠ {{ error }}</div>{% endfor %}
+          {% endfor %}
+          {% for error in form.non_field_errors %}<div>⚠ {{ error }}</div>{% endfor %}
+        </div>
+      {% endif %}
+      <button type="submit" class="auth-btn">✦ Crear mi cuenta</button>
+    </form>
+    <div style="text-align:center;margin-top:1.5rem;color:rgba(247,232,212,.4);font-size:.875rem">
+      ¿Ya tienes cuenta? <a href="{% url 'login' %}" class="auth-link">Inicia sesión</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

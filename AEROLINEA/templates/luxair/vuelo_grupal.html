@@ -1,0 +1,42 @@
+<form method="POST">
+  {% csrf_token %}
+
+  <div style="margin-bottom:1.25rem">
+    <label style="font-size:.85rem;color:var(--text-muted);display:block;margin-bottom:.4rem">Nombre del contacto *</label>
+    <input type="text" name="nombre_contacto" value="{{ datos.nombre_contacto }}" placeholder="Tu nombre completo"
+      style="width:100%;padding:.75rem 1rem;border:1.5px solid #C8A030;border-radius:8px;font-size:1rem;background:#FFFDF7;color:#3D1F00;box-sizing:border-box">
+  </div>
+
+  <div style="margin-bottom:1.25rem">
+    <label style="font-size:.85rem;color:var(--text-muted);display:block;margin-bottom:.4rem">Correo electrónico *</label>
+    <input type="email" name="email" value="{{ datos.email }}" placeholder="correo@ejemplo.com"
+      style="width:100%;padding:.75rem 1rem;border:1.5px solid #C8A030;border-radius:8px;font-size:1rem;background:#FFFDF7;color:#3D1F00;box-sizing:border-box">
+  </div>
+
+  <div style="margin-bottom:1.25rem">
+    <label style="font-size:.85rem;color:var(--text-muted);display:block;margin-bottom:.4rem">Teléfono *</label>
+    <input type="text" name="telefono" value="{{ datos.telefono }}" placeholder="55 1234 5678"
+      style="width:100%;padding:.75rem 1rem;border:1.5px solid #C8A030;border-radius:8px;font-size:1rem;background:#FFFDF7;color:#3D1F00;box-sizing:border-box">
+  </div>
+
+  <div style="margin-bottom:1.25rem">
+    <label style="font-size:.85rem;color:var(--text-muted);display:block;margin-bottom:.4rem">Número de pasajeros *</label>
+    <input type="number" name="num_pasajeros" value="{{ datos.num_pasajeros }}" min="9"
+      style="width:100%;padding:.75rem 1rem;border:1.5px solid #C8A030;border-radius:8px;font-size:1rem;background:#FFFDF7;color:#3D1F00;box-sizing:border-box">
+  </div>
+
+  <div style="margin-bottom:1.25rem">
+    <label style="font-size:.85rem;color:var(--text-muted);display:block;margin-bottom:.4rem">Comentarios adicionales</label>
+    <textarea name="comentarios" rows="4" placeholder="Destino, fecha tentativa, requerimientos especiales..."
+      style="width:100%;padding:.75rem 1rem;border:1.5px solid #C8A030;border-radius:8px;font-size:1rem;background:#FFFDF7;color:#3D1F00;box-sizing:border-box">{{ datos.comentarios }}</textarea>
+  </div>
+
+  {% if error %}
+    <p style="color:#B00020;font-size:.875rem;margin-bottom:1rem">⚠ {{ error }}</p>
+  {% endif %}
+
+  <button type="submit"
+    style="width:100%;padding:.9rem;background:linear-gradient(135deg,#8B5A00,#C8A030);color:#fff;border:none;border-radius:8px;font-size:1rem;font-family:var(--font-serif);cursor:pointer;letter-spacing:.05em">
+    Enviar solicitud grupal ✦
+  </button>
+</form>

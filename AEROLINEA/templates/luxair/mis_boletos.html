@@ -1,0 +1,88 @@
+{% extends 'luxair/base.html' %}
+{% block title %}Mis Boletos — LUX AIR{% endblock %}
+{% block content %}
+<div style="max-width:800px;margin:5rem auto;padding:0 2rem">
+  <h2 style="font-family:var(--font-serif);font-size:2rem;margin-bottom:2rem">
+    Mis boletos ✦
+  </h2>
+
+  {% if boletos %}
+    {% for boleto in boletos %}
+    <div style="background:var(--white);border-radius:20px;box-shadow:var(--shadow-lg);margin-bottom:1.5rem;overflow:hidden">
+      <div style="display:grid;grid-template-columns:2fr 1fr">
+        <!-- LADO IZQUIERDO -->
+        <div style="padding:2rem;border-right:2px dashed var(--border)">
+          <div style="font-family:var(--font-serif);font-size:1.4rem;font-weight:600;color:var(--rose-dark);letter-spacing:.12em;margin-bottom:1.5rem">
+            LUX✦AIR
+          </div>
+          <div style="display:flex;align-items:center;gap:1.5rem;margin-bottom:1.5rem">
+            <div>
+              <div style="font-size:.75rem;color:var(--text-muted)">{{ boleto.vuelo.origen.ciudad }}</div>
+              <div style="font-family:var(--font-serif);font-size:3rem;font-weight:300;line-height:1">{{ boleto.vuelo.origen.codigo_iata }}</div>
+            </div>
+            <div style="color:var(--gold);font-size:1.5rem">✈</div>
+            <div>
+              <div style="font-size:.75rem;color:var(--text-muted)">{{ boleto.vuelo.destino.ciudad }}</div>
+              <div style="font-family:var(--font-serif);font-size:3rem;font-weight:300;line-height:1">{{ boleto.vuelo.destino.codigo_iata }}</div>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem">
+            <div>
+              <div style="font-size:.65rem;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted)">Pasajero</div>
+              <div style="font-size:.9rem;font-weight:500">{{ boleto.pasajero.nombre_completo }}</div>
+            </div>
+            <div>
+              <div style="font-size:.65rem;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted)">Vuelo</div>
+              <div style="font-size:.9rem;font-weight:500">LX{{ boleto.vuelo.numero_vuelo }}</div>
+            </div>
+            <div>
+              <div style="font-size:.65rem;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted)">Fecha</div>
+              <div style="font-size:.9rem;font-weight:500">{{ boleto.vuelo.fecha_salida|date:"d M Y" }}</div>
+            </div>
+            <div>
+              <div style="font-size:.65rem;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted)">Salida</div>
+              <div style="font-size:.9rem;font-weight:500">{{ boleto.vuelo.fecha_salida|time:"H:i" }}</div>
+            </div>
+            <div>
+              <div style="font-size:.65rem;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted)">Llegada</div>
+              <div style="font-size:.9rem;font-weight:500">{{ boleto.vuelo.fecha_llegada|time:"H:i" }}</div>
+            </div>
+            <div>
+              <div style="font-size:.65rem;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted)">Clase</div>
+              <div style="font-size:.9rem;font-weight:500">{{ boleto.clase|title }}</div>
+            </div>
+          </div>
+        </div>
+        <!-- LADO DERECHO -->
+        <div style="padding:2rem;background:var(--blush);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.75rem;text-align:center">
+          <div style="font-size:.65rem;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted)">Asiento</div>
+          <div style="font-family:var(--font-serif);font-size:3rem;font-weight:300;color:var(--rose-dark);line-height:1">{{ boleto.asiento }}</div>
+          <div style="font-size:.8rem;color:var(--rose-dark)">{{ boleto.clase|title }}</div>
+          <div style="width:80px;height:80px;background:var(--midnight);border-radius:6px;display:flex;align-items:center;justify-content:center;color:var(--champagne);font-size:.55rem;text-align:center;padding:.5rem;word-break:break-all">
+            {{ boleto.codigo_boleto|stringformat:"s"|slice:":16" }}
+          </div>
+          {% if boleto.check_in_realizado %}
+            <span style="background:#E8F5E9;color:#2E7D32;padding:.25rem .75rem;border-radius:50px;font-size:.75rem">✓ Check-in</span>
+          {% else %}
+            <span style="background:var(--blush);color:var(--rose-dark);padding:.25rem .75rem;border-radius:50px;font-size:.75rem">Pendiente check-in</span>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+
+    <div style="text-align:center;margin-top:2rem">
+      <button onclick="window.print()" class="btn btn-outline" style="margin-right:1rem">🖨 Imprimir todos</button>
+      <a href="{% url 'inicio' %}" class="btn btn-gold">Reservar otro vuelo ✦</a>
+    </div>
+
+  {% else %}
+    <div style="text-align:center;padding:4rem 2rem;color:var(--text-muted)">
+      <div style="font-size:3rem;margin-bottom:1rem">✈</div>
+      <div style="font-family:var(--font-serif);font-size:1.5rem;color:var(--text);margin-bottom:.5rem">No tienes boletos aún</div>
+      <p style="margin-bottom:2rem">¡Reserva tu primer vuelo con LUX AIR!</p>
+      <a href="{% url 'buscar_vuelos' %}" class="btn btn-gold">Buscar vuelos ✦</a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

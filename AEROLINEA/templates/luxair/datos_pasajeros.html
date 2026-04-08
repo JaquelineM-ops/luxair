@@ -1,0 +1,76 @@
+{% extends 'luxair/base.html' %}
+{% block title %}Datos de Pasajeros — LUX AIR{% endblock %}
+{% block content %}
+<div style="max-width:800px;margin:5rem auto;padding:0 2rem">
+  <h2 style="font-family:var(--font-serif);font-size:2rem;margin-bottom:2rem">
+    Datos de pasajeros ✦
+  </h2>
+  <form method="post">
+    {% csrf_token %}
+    {% for form in forms_pasajeros %}
+    <div class="card" style="padding:2rem;margin-bottom:1.5rem">
+      <h3 style="font-family:var(--font-serif);font-size:1.2rem;margin-bottom:1.5rem;color:var(--rose-dark)">
+        Pasajero {{ forloop.counter }}
+      </h3>
+      <div class="grid-2">
+        <div class="form-group">
+          <label class="form-label">Nombre(s)</label>
+          <input type="text" name="p{{ forloop.counter0 }}-nombre" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Apellido paterno</label>
+          <input type="text" name="p{{ forloop.counter0 }}-apellido_paterno" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Apellido materno</label>
+          <input type="text" name="p{{ forloop.counter0 }}-apellido_materno" class="form-control">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Fecha de nacimiento</label>
+          <input type="date" name="p{{ forloop.counter0 }}-fecha_nacimiento" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Tipo de pasajero</label>
+          <select name="p{{ forloop.counter0 }}-tipo" class="form-control">
+            <option value="adulto">Adulto</option>
+            <option value="menor">Menor de edad</option>
+            <option value="tercera_edad">Tercera edad</option>
+            <option value="discapacidad">Persona con discapacidad</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Nacionalidad</label>
+          <input type="text" name="p{{ forloop.counter0 }}-nacionalidad" class="form-control" value="Mexicana">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Necesidades especiales</label>
+        <textarea name="p{{ forloop.counter0 }}-necesidades_especiales" class="form-control" rows="2"></textarea>
+      </div>
+    </div>
+    {% endfor %}
+
+    <!-- TUA Y EXTRAS -->
+    <div class="card" style="padding:2rem;margin-bottom:1.5rem">
+      <h3 style="font-family:var(--font-serif);font-size:1.2rem;margin-bottom:1.5rem;color:var(--rose-dark)">
+        Servicios adicionales ✦
+      </h3>
+      <div class="form-group">
+        <label class="form-label">Pago de TUA (${{ tua_precio }})</label>
+        <select name="tua_opcion" class="form-control">
+          <option value="ahora">Pagar TUA ahora</option>
+          <option value="despues">Pagar TUA después (check-in)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Equipaje extra ($500 por maleta)</label>
+        <input type="number" name="equipaje_extra" class="form-control" value="0" min="0" max="5">
+      </div>
+    </div>
+
+    <button type="submit" class="btn btn-gold" style="width:100%;padding:.9rem;font-size:1rem;border-radius:12px">
+      Continuar al resumen ›
+    </button>
+  </form>
+</div>
+{% endblock %}

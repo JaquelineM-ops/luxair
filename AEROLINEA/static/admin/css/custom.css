@@ -1,0 +1,149 @@
+:root {
+  --primary: #8B6000;
+  --secondary: #C8A030;
+  --accent: #5A3200;
+  --primary-fg: #FFF8E7;
+}
+
+#header {
+  background: #F5EDD8 !important;
+  border-bottom: 2px solid #C8A030 !important;
+  color: #3D1F00 !important;
+}
+
+#header a:link, 
+#header a:visited,
+#header a {
+  color: #3D1F00 !important;
+  font-weight: 600 !important;
+}
+
+#header #user-tools,
+#header #user-tools a:link,
+#header #user-tools a:visited,
+#header #user-tools a {
+  color: #3D1F00 !important;
+  font-weight: 600 !important;
+  text-decoration: underline !important;
+}
+
+#branding h1 {
+  color: #5A3200 !important;
+  font-family: Georgia, serif;
+}
+
+#nav-sidebar, .sticky {
+  background: #EDD9A3 !important;
+}
+
+.module h2, .module caption, .inline-group h2 {
+  background: #C8A030 !important;
+  color: #3D1F00 !important;
+}
+
+div#content {
+  background: #FAF5EE !important;
+}
+
+body {
+  background: #FAF5EE !important;
+}
+
+.button, input[type=submit], input[type=button], .submit-row input, a.button {
+  background: #8B6000 !important;
+  color: #FFF8E7 !important;
+  border: none !important;
+}
+
+.button:hover, input[type=submit]:hover {
+  background: #5A3200 !important;
+}
+
+a:link, a:visited {
+  color: #8B6000 !important;
+}
+
+th {
+  background: #EDD9A3 !important;
+  color: #5A3200 !important;
+}
+
+.sidebar-menu-list li a {
+  color: #8B6000 !important;
+}
+/* Quitar línea azul */
+#nav-sidebar .module,
+div#nav-sidebar {
+  background: #EDD9A3 !important;
+  border: none !important;
+}
+
+.nav-sidebar .current-app .section:link,
+.nav-sidebar .current-app .section:visited {
+  background: rgba(200,160,48,.2) !important;
+  border-left: 3px solid #C8A030 !important;
+  color: #5A3200 !important;
+}
+
+/* Quitar azul de breadcrumbs */
+div.breadcrumbs {
+  background: #EDD9A3 !important;
+  color: #5A3200 !important;
+  border-bottom: 1px solid #C8A030 !important;
+}
+div.breadcrumbs a { color: #8B6000 !important; }
+
+/* Agrandar letras */
+body, td, th, input, select, textarea {
+  font-size: 14px !important;
+}
+#content h1 { font-size: 22px !important; }
+#content h2 { font-size: 18px !important; }
+.module h2 { font-size: 15px !important; }
+#nav-sidebar { font-size: 14px !important; }
+/* Letras más oscuras en general */
+body, td, th, p, li, label {
+  color: #3D1F00 !important;
+}
+
+/* Links más oscuros */
+a:link, a:visited {
+  color: #5A3200 !important;
+}
+
+/* Botón ADD USER visible */
+.object-tools a:link,
+.object-tools a:visited {
+  background: #5A3200 !important;
+  color: #FFF8E7 !important;
+  font-weight: 600 !important;
+  border: none !important;
+}
+.object-tools a:hover {
+  background: #3D1F00 !important;
+}
+
+/* Títulos más oscuros */
+#content h1, #content h2, h3 {
+  color: #3D1F00 !important;
+}
+
+/* Sidebar letras oscuras */
+#nav-sidebar a {
+  color: #5A3200 !important;
+  font-weight: 500 !important;
+}
+/* Log out visible */
+#user-tools a:link,
+#user-tools a:visited {
+  color: #5A3200 !important;
+  font-weight: 600 !important;
+  text-decoration: underline !important;
+}
+#user-tools a:hover {
+  color: #3D1F00 !important;
+}
+#user-tools {
+  color: #5A3200 !important;
+  font-weight: 500 !important;
+}

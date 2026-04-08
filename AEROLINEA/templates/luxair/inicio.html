@@ -1,0 +1,570 @@
+{% extends 'luxair/base.html' %}
+{% block title %}LUX AIR — Vuela con elegancia{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* ── HERO ── */
+  .carrusel { position:absolute; inset:0; }
+.carrusel-img {
+  position:absolute; inset:0;
+  width:100%; height:100%;
+  object-fit:cover; opacity:0;
+  transition: opacity 1s ease;
+}
+.carrusel-img.activa { opacity:.75; }
+  .hero {
+  position: relative; min-height: 100vh;
+  display: flex; align-items: center;
+  background: linear-gradient(135deg, #F5EDD8 0%, #EDD9A3 50%, #E8C97A 100%);
+  overflow: hidden;
+  }
+  .hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 80% 60% at 70% 40%, rgba(255,255,255,.3) 0%, transparent 60%);
+}
+  .hero-particles {
+    position: absolute; inset: 0; overflow: hidden;
+  }
+  .hero-particles span {
+    position: absolute; width: 2px; height: 2px;
+    background: var(--gold-light); border-radius: 50%;
+    animation: twinkle var(--d, 4s) var(--delay, 0s) ease-in-out infinite;
+    opacity: 0;
+  }
+  @keyframes twinkle {
+    0%, 100% { opacity: 0; transform: scale(1); }
+    50% { opacity: .8; transform: scale(1.5); }
+  }
+
+  .hero-content {
+    position: relative; z-index: 2;
+    max-width: 1200px; margin: 0 auto; padding: 0 3rem;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: center;
+  }
+  .hero-eyebrow {
+    display: inline-flex; align-items: center; gap: .5rem;
+    font-size: .75rem; letter-spacing: .15em; text-transform: uppercase;
+    color: #8A6A00;
+  }
+  .hero-eyebrow::before { content: ''; display: inline-block; width: 28px; height: 1px; background: var(--gold); }
+
+  .hero-title {
+  font-family: var(--font-serif);
+  font-size: clamp(3rem, 6vw, 5.5rem);
+  font-weight: 300; line-height: 1.05;
+  color: #3D1F00;
+  text-shadow: 1px 1px 0px rgba(255,220,120,.4);
+  margin-bottom: 1.5rem;
+}
+.hero-title em {
+  font-style: italic;
+  color: #8B5E00;
+  text-shadow: 0 0 30px rgba(212,175,55,.3);
+  display: block;
+}
+  .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; }
+
+  /* ── SEARCH CARD ── */
+  .search-card {
+  background: rgba(255,248,220,.25);
+  border: 2.5px solid #8B6000;
+  border-radius: 20px;
+  padding: 2rem;
+  backdrop-filter: blur(20px);
+  box-shadow: 0 8px 32px rgba(107,68,0,.2), inset 0 1px 0 rgba(255,220,100,.3);
+}
+  .search-title {
+    font-family: var(--font-serif);
+    font-size: 1.4rem; color: #3D2000;
+    margin-bottom: 1.5rem;
+  }
+  .trip-toggle {
+    display: flex; gap: .5rem; margin-bottom: 1.25rem;
+  }
+  .trip-btn {
+  flex: 1; padding: .5rem; border-radius: 8px;
+  border: none;
+  background: linear-gradient(135deg, #C8A030 0%, #8B6000 100%);
+  color: #FFF8E7;
+  font-family: var(--font-sans); font-size: .85rem;
+  font-weight: 600; cursor: pointer;
+  box-shadow: 0 4px 15px rgba(200,160,48,.3);
+  transition: all .2s;
+}
+.trip-btn:hover {
+  box-shadow: 0 6px 20px rgba(200,160,48,.5);
+  transform: translateY(-1px);
+}
+.trip-btn.active {
+  background: linear-gradient(135deg, #8B6000 0%, #5A3A00 100%);
+  box-shadow: 0 4px 15px rgba(90,58,0,.4);
+}
+  .search-input {
+  width: 100%;
+  background: rgba(255,248,230,.9);
+  border: 2px solid #8B6000;
+  border-radius: 10px;
+  padding: .8rem 1rem;
+  color: #3D1F00;
+  font-family: var(--font-sans);
+  font-size: .95rem;
+  outline: none;
+  transition: border-color .2s;
+}
+.search-input:focus { border-color: #3D1F00; background: #FFFDF5; }
+.search-input::placeholder { color: #8B6000; }
+.search-input option { background: #FFF8E7; color: #3D1F00; }
+
+  .search-row { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; margin-bottom: .75rem; }
+  .search-row-3 { display: grid; grid-template-columns: 1fr 1fr 80px; gap: .75rem; margin-bottom: .75rem; }
+  .input-label {
+    font-size: .7rem; letter-spacing: .08em; text-transform: uppercase;
+    color: #6B4A00; margin-bottom: .35rem; display: block;
+  }
+
+  /* ── STATS BAR ── */
+  .stats-bar {
+    background: var(--white); border-top: 1px solid var(--border);
+    padding: 2rem 0;
+  }
+  .stats-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    max-width: 1200px; margin: 0 auto; padding: 0 2rem;
+    text-align: center; gap: 2rem;
+  }
+  .stat-num {
+    font-family: var(--font-serif); font-size: 2.5rem; font-weight: 400;
+    color: var(--rose-dark); line-height: 1;
+  }
+  .stat-label { font-size: .8rem; color: var(--text-muted); margin-top: .3rem; letter-spacing: .04em; }
+
+  /* ── DESTINOS ── */
+  .destinos-section { padding: 7rem 0; }
+  .destinos-header { text-align: center; margin-bottom: 4rem; }
+  .destinos-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    max-width: 1200px; margin: 0 auto; padding: 0 2rem;
+  }
+  .destino-card {
+    position: relative; border-radius: 16px; overflow: hidden;
+    aspect-ratio: 4/3; cursor: pointer;
+    transition: transform .3s, box-shadow .3s;
+  }
+  .destino-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-lg); }
+  .destino-card:first-child { grid-row: span 2; aspect-ratio: auto; }
+  .destino-bg {
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, var(--plum) 0%, var(--rose-dark) 100%);
+  }
+  .destino-bg-2 { background: linear-gradient(135deg, #1A2744 0%, #2D4080 100%); }
+  .destino-bg-3 { background: linear-gradient(135deg, #1A3026 0%, #2D6050 100%); }
+  .destino-bg-4 { background: linear-gradient(135deg, #3A1A10 0%, #8B4513 100%); }
+  .destino-bg-5 { background: linear-gradient(135deg, #1A1A3A 0%, #3D3D80 100%); }
+  .destino-bg-6 { background: linear-gradient(135deg, #2A1A1A 0%, #6B3030 100%); }
+  .destino-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(to top, rgba(26,18,32,.9) 0%, rgba(26,18,32,.1) 60%);
+    display: flex; align-items: flex-end; padding: 1.5rem;
+  }
+  .destino-info { color: var(--white); }
+  .destino-iata {
+    font-family: var(--font-serif); font-size: 3rem; font-weight: 300;
+    color: rgba(255,255,255,.25); line-height: 1; letter-spacing: .05em;
+  }
+  .destino-ciudad { font-size: 1.1rem; font-weight: 500; }
+  .destino-pais { font-size: .8rem; color: var(--gold-light); }
+
+  /* ── CLASES ── */
+
+.clases-section {
+  padding: 7rem 0;
+  background: linear-gradient(135deg, #F7EDD0 0%, #EDD9A3 100%);
+  position: relative; overflow: hidden;
+}
+.clases-header {
+  text-align: center;
+  margin-bottom: 4rem;
+  position: relative;
+}
+.clases-header .section-label {
+  color: #8B5A00;
+  font-size: .9rem;
+  font-weight: 700;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: .5rem;
+}
+.clases-header .section-title {
+  color: #5A3200;
+  font-size: 4rem;
+  font-weight: 700;
+  text-shadow: 1px 1px 0 rgba(212,175,55,.3);
+}
+.clases-header .section-title em {
+  color: #8B5A00;
+  font-style: italic;
+}
+.clases-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem;
+  max-width: 1200px; margin: 0 auto; padding: 0 2rem;
+  position: relative;
+}
+.clase-card {
+  border-radius: 16px; overflow: hidden;
+  border: 2.5px solid #C8A030;
+  transition: transform .3s, border-color .3s;
+  position: relative;
+  box-shadow: 0 4px 20px rgba(200,160,48,.2);
+}
+.clase-card:hover {
+  transform: translateY(-8px);
+  border-color: #8B5A00;
+  box-shadow: 0 8px 35px rgba(200,160,48,.35);
+}
+.clase-card.featured { border-color: #8B5A00; }
+.clase-featured-badge {
+  position: absolute; top: 1rem; right: 1rem; z-index: 2;
+  background: #C8A030; color: #3D1F00;
+  font-size: .7rem; font-weight: 600; letter-spacing: .06em;
+  padding: .3rem .75rem; border-radius: 50px; text-transform: uppercase;
+}
+.clase-header {
+  padding: 2rem 1.75rem 1.5rem;
+  background: rgba(255,248,230,.5);
+  border-bottom: 1px solid rgba(200,160,48,.2);
+}
+.clase-icon { font-size: 2rem; margin-bottom: .75rem; }
+.clase-name {
+  font-family: var(--font-serif);
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #5A3200;
+}
+.clase-desde {
+  font-size: .8rem;
+  color: #8B5A00;
+  margin-top: .25rem;
+}
+.clase-body { padding: 1.5rem 1.75rem; }
+.clase-feature {
+  display: flex; align-items: center; gap: .6rem;
+  font-size: .9rem; font-weight: 500;
+  color: #5A3200;
+  padding: .4rem 0;
+  border-bottom: 1px solid rgba(200,160,48,.2);
+}
+.clase-feature:last-child { border-bottom: none; }
+.clase-feature::before { content: '✦'; color: #C8A030; font-size: .6rem; flex-shrink: 0; }
+
+  /* ── CTA ── */
+  .cta-section {
+    padding: 7rem 2rem; text-align: center;
+    background: var(--blush);
+    background-image: radial-gradient(ellipse 80% 80% at 50% 50%, rgba(201,118,143,.08) 0%, transparent 70%);
+  }
+  .cta-title { font-family: var(--font-serif); font-size: 3.5rem; font-weight: 300; color: var(--midnight); margin-bottom: 1rem; }
+  .cta-title em { color: var(--rose); font-style: italic; }
+  .cta-sub { color: var(--text-muted); font-size: 1rem; margin-bottom: 2.5rem; }
+
+  @media (max-width: 1024px) {
+    .hero-content { grid-template-columns: 1fr; gap: 3rem; padding: 6rem 2rem 4rem; }
+    .search-card { order: -1; }
+    .destinos-grid, .clases-grid { grid-template-columns: repeat(2, 1fr); }
+    .destino-card:first-child { grid-row: span 1; }
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 640px) {
+    .hero-title { font-size: 2.5rem; }
+    .destinos-grid, .clases-grid { grid-template-columns: 1fr; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- ═══════════════ HERO ═══════════════ -->
+<section class="hero">
+  <div class="hero-particles" id="particles"></div>
+  <div class="hero-content">
+    <div class="hero-text">
+      <div class="hero-eyebrow">Tu aerolínea premium</div>
+      <h1 class="hero-title">
+        El mundo<br>te espera
+        <em>en primera clase.</em>
+      </h1>
+      <p class="hero-sub">
+        Descubre una nueva forma de volar. Confort, elegancia y destinos increíbles al alcance de tus alas.
+      </p>
+      <div class="hero-actions">
+        <a href="{% url 'buscar_vuelos' %}" class="btn btn-primary" style="padding:.85rem 2.5rem;font-size:1rem">
+          ✈ Buscar vuelos
+        </a>
+        <a href="{% url 'registro' %}" class="btn" style="background:linear-gradient(135deg,#C8A030,#6B4400);color:#FFF8E7;border:none #6B4400;padding:.85rem 2rem;font-size:1rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;box-shadow:0 6px 25px rgba(139,96,0,.5)">
+         ✦ Crear cuenta
+        </a>
+      </div>
+    </div>
+
+    <!-- MINI BUSCADOR EN HERO -->
+    <div class="search-card">
+      <div class="search-title">¿A dónde vamos hoy? ✦</div>
+      <form action="{% url 'buscar_vuelos' %}" method="get">
+        <!-- Tipo de viaje -->
+        <div class="trip-toggle mb-3">
+          <button type="button" class="trip-btn active" onclick="setTrip('ida',this)">✈ Solo ida</button>
+          <button type="button" class="trip-btn" onclick="setTrip('redondo',this)" style="background:linear-gradient(135deg,#C8A030,#8B6000);color:#FFF8E7;border:2px solid #8B6000;font-weight:600;box-shadow:0 4px 15px rgba(200,160,48,.3)">⇄ Vuelo redondo</button>
+        </div>
+        <input type="hidden" name="tipo_viaje" id="tipo_viaje_input" value="ida">
+
+        <!-- Origen / Destino -->
+        <div class="search-row">
+          <div>
+            <label class="input-label">Origen</label>
+            <select name="origen" class="search-input" required>
+              <option value="">¿Desde dónde?</option>
+              {% for a in aeropuertos %}
+                <option value="{{ a.id }}">{{ a.codigo_iata }} — {{ a.ciudad }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div>
+            <label class="input-label">Destino</label>
+            <select name="destino" class="search-input" required>
+              <option value="">¿A dónde?</option>
+              {% for a in aeropuertos %}
+                <option value="{{ a.id }}">{{ a.codigo_iata }} — {{ a.ciudad }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+
+        <!-- Fechas y pasajeros -->
+        <div class="search-row-3">
+          <div>
+            <label class="input-label">Salida</label>
+            <input type="date" name="fecha_salida" class="search-input" required>
+          </div>
+          <div id="fecha-regreso-wrap">
+            <label class="input-label">Regreso</label>
+            <input type="date" name="fecha_regreso" class="search-input" id="fecha_regreso_input" disabled>
+          </div>
+          <div>
+            <label class="input-label">Pasaj.</label>
+            <input type="number" name="num_pasajeros" class="search-input" value="1" min="1" max="200">
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-gold" style="width:100%;padding:.85rem;font-size:.95rem;border-radius:10px;margin-top:.5rem">
+          Buscar vuelos disponibles ✦
+        </button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ STATS ═══════════════ -->
+<section class="stats-bar">
+  <div class="stats-grid">
+    <div><div class="stat-num">120+</div><div class="stat-label">Destinos</div></div>
+    <div><div class="stat-num">2M+</div><div class="stat-label">Pasajeros felices</div></div>
+    <div><div class="stat-num">98%</div><div class="stat-label">Puntualidad</div></div>
+    <div><div class="stat-num">15</div><div class="stat-label">Años de excelencia</div></div>
+  </div>
+</section>
+
+<!-- ═══════════════ DESTINOS ═══════════════ -->
+<section class="destinos-section">
+  <div class="destinos-header container">
+    <div class="section-label">Explora el mundo</div>
+    <h2 class="section-title">Destinos <em>soñados</em></h2>
+  </div>
+  <div class="destinos-grid">
+   {% for dest in destinos %}
+<div class="destino-card" onclick="window.location='/vuelos/?destino={{ dest.id }}'">
+  <div class="carrusel" id="carrusel-{{ dest.id }}">
+    {% if dest.imagen %}
+      <img src="{{ dest.imagen.url }}" class="carrusel-img activa">
+    {% endif %}
+    {% for img in dest.imagenes.all %}
+      <img src="{{ img.imagen.url }}" class="carrusel-img">
+    {% endfor %}
+  </div>
+  <div class="destino-overlay">
+    <div class="destino-info">
+      <div class="destino-iata">{{ dest.codigo_iata }}</div>
+      <div class="destino-ciudad">{{ dest.ciudad }}</div>
+      <div class="destino-pais">{{ dest.pais }}</div>
+    </div>
+  </div>
+</div>
+{% empty %}
+    {% for d in "123456" %}
+    <div class="destino-card">
+      {% if dest.imagen %}
+  <img src="{{ dest.imagen.url }}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.75">
+{% else %}
+  <div class="destino-bg destino-bg-{{ forloop.counter }}"></div>
+{% endif %}
+      <div class="destino-overlay">
+        <div class="destino-info">
+          <div class="destino-iata">LUX</div>
+          <div class="destino-ciudad">Próximamente</div>
+          <div class="destino-pais">Nuevas rutas</div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+    {% endfor %}
+  </div>
+</section>
+
+<!-- ═══════════════ CLASES ═══════════════ -->
+<section class="clases-section">
+  <div class="clases-header">
+    <div class="section-label" style="color:#8B5A00;font-size:.9rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase">✦ Tu experiencia a bordo ✦</div>
+    <h2 class="section-title" style="color:#5A3200;font-size:4rem;font-weight:700;text-align:center;text-shadow:2px 2px 0 rgba(212,175,55,.25)">Elige tu <em style="color:#8B5A00;font-style:italic;font-weight:700">clase</em></h2>
+  </div>
+  <div class="clases-grid">
+    <div class="clase-card">
+      <div class="clase-header">
+        <div class="clase-icon">🌿</div>
+        <div class="clase-name">Económica</div>
+        <div class="clase-desde">Desde $1,299 MXN</div>
+      </div>
+      <div class="clase-body">
+        <div class="clase-feature">Asiento con reclinación estándar</div>
+        <div class="clase-feature">Artículo personal incluido</div>
+        <div class="clase-feature">Snack de cortesía</div>
+        <div class="clase-feature">Wi-Fi de pago disponible</div>
+        <div class="clase-feature">Entretenimiento a bordo</div>
+      </div>
+    </div>
+    <div class="clase-card featured">
+      <div class="clase-featured-badge">Más popular</div>
+      <div class="clase-header">
+        <div class="clase-icon">💎</div>
+        <div class="clase-name">Ejecutiva</div>
+        <div class="clase-desde">Desde $4,899 MXN</div>
+      </div>
+      <div class="clase-body">
+        <div class="clase-feature">Asiento extra cómodo con más espacio</div>
+        <div class="clase-feature">Maleta de mano + documentada</div>
+        <div class="clase-feature">Abordaje prioritario</div>
+        <div class="clase-feature">Menú de alimentos calientes</div>
+        <div class="clase-feature">Wi-Fi gratis + amenity kit</div>
+      </div>
+    </div>
+    <div class="clase-card">
+      <div class="clase-header">
+        <div class="clase-icon">👑</div>
+        <div class="clase-name">Primera Clase</div>
+        <div class="clase-desde">Desde $12,500 MXN</div>
+      </div>
+      <div class="clase-body">
+        <div class="clase-feature">Suite privada con cama plana</div>
+        <div class="clase-feature">Equipaje premium sin límite</div>
+        <div class="clase-feature">Acceso a sala VIP LUX</div>
+        <div class="clase-feature">Menú gourmet con sommelier</div>
+        <div class="clase-feature">Servicio personal a bordo</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ CTA ═══════════════ -->
+<section class="cta-section">
+  <div class="container-sm">
+    <h2 class="cta-title">Vuela más, <em>paga menos</em></h2>
+    <p class="cta-sub">Regístrate hoy y accede a tarifas exclusivas, acumulación de puntos y beneficios únicos de LUX AIR.</p>
+    <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap">
+      <a href="{% url 'registro' %}" class="btn btn-primary" style="padding:.9rem 2.5rem;font-size:1rem">
+        ✦ Crear mi cuenta gratis
+      </a>
+      <a href="{% url 'buscar_vuelos' %}" class="btn" style="padding:.9rem 2rem;font-size:1rem;border:2.5px solid #8B6000;color:#5A3200;font-weight:600;letter-spacing:.06em;border-radius:50px;background:transparent">
+  Ver vuelos disponibles
+</a>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.querySelectorAll('.carrusel').forEach(carrusel => {
+  const imgs = carrusel.querySelectorAll('.carrusel-img');
+  if(imgs.length <= 1) return;
+  let actual = 0;
+  setInterval(() => {
+    imgs[actual].classList.remove('activa');
+    actual = (actual + 1) % imgs.length;
+    imgs[actual].classList.add('activa');
+  }, 3000);
+});
+
+  // Partículas estrellas
+  const container = document.getElementById('particles');
+const canvas = document.createElement('canvas');
+canvas.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;pointer-events:none';
+container.appendChild(canvas);
+const ctx = canvas.getContext('2d');
+
+function resizeCanvas() {
+  canvas.width = container.offsetWidth;
+  canvas.height = container.offsetHeight;
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+const flares = Array.from({length: 25}, () => ({
+  x: Math.random() * canvas.width,
+  y: Math.random() * canvas.height,
+  size: Math.random() * 20 + 8,
+  a: Math.random(),
+  speed: Math.random() * .015 + .005
+}));
+
+function drawStar(x, y, size, alpha) {
+  ctx.save();
+  ctx.translate(x, y);
+  for (let i = 0; i < 4; i++) {
+    ctx.beginPath();
+    ctx.moveTo(0, -size);
+    ctx.lineTo(0, size);
+    ctx.strokeStyle = `rgba(200,155,10,${alpha})`;
+    ctx.lineWidth = 1;
+    ctx.stroke();
+    ctx.rotate(Math.PI / 4);
+  }
+  ctx.beginPath();
+  ctx.arc(0, 0, size * .15, 0, Math.PI * 2);
+  ctx.fillStyle = `rgba(255,220,80,${alpha})`;
+  ctx.fill();
+  ctx.restore();
+}
+
+function drawFlares() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.globalAlpha = 1;
+  flares.forEach(f => {
+    f.a += f.speed;
+    if (f.a > 1) f.speed = -Math.abs(f.speed);
+    if (f.a < 0) f.speed = Math.abs(f.speed);
+    drawStar(f.x, f.y, f.size, f.a);
+  });
+  requestAnimationFrame(drawFlares);
+}
+drawFlares();
+  // Toggle ida / redondo
+  function setTrip(tipo, btn) {
+    document.querySelectorAll('.trip-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tipo_viaje_input').value = tipo;
+    const regreso = document.getElementById('fecha_regreso_input');
+    regreso.disabled = tipo === 'ida';
+    if (tipo === 'ida') regreso.value = '';
+  }
+</script>
+{% endblock %}

@@ -1,0 +1,111 @@
+{% extends 'luxair/base.html' %}
+{% block title %}Mi Cuenta — LUX AIR{% endblock %}
+{% block content %}
+<div style="max-width:900px;margin:5rem auto;padding:0 2rem">
+  <h2 style="font-family:var(--font-serif);font-size:2rem;margin-bottom:.5rem;color:#3D1F00">
+  Mi cuenta ✦
+</h2>
+{% if user.genero == 'M' %}
+  <p style="color:var(--text-muted);margin-bottom:1rem">Bienvenido, {{ user.first_name }}. Aquí están tus reservaciones.</p>
+{% else %}
+  <p style="color:var(--text-muted);margin-bottom:1rem">Bienvenida, {{ user.first_name }}. Aquí están tus reservaciones.</p>
+{% endif %}
+<a href="{% url 'perfil' %}" class="btn btn-gold" style="margin-bottom:2rem;display:inline-block">
+  ✦ Editar mi perfil
+</a>
+  <p style="color:var(--text-muted);margin-bottom:2rem">Bienvenida, {{ user.first_name }}. Aquí están tus reservaciones.</p>
+
+
+  {% if reservaciones %}
+    {% for res in reservaciones %}
+    <div class="card" style="padding:1.5rem;margin-bottom:1.25rem;border:1.5px solid #C8A030">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+        <div>
+          <div style="font-family:var(--font-serif);font-size:1.2rem;color:#3D1F00">
+            {{ res.vuelo_ida.origen.codigo_iata }} → {{ res.vuelo_ida.destino.codigo_iata }}
+          </div>
+          <div style="font-size:.8rem;color:var(--text-muted)">
+            {{ res.vuelo_ida.fecha_salida|date:"d M Y" }} · {{ res.clase|title }} · {{ res.numero_pasajeros }} pasajero{{ res.numero_pasajeros|pluralize }}
+          </div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-family:var(--font-serif);font-size:1.3rem;color:#8B5A00">${{ res.total|floatformat:2 }} MXN</div>
+          {% if res.estado == 'confirmada' %}
+            <span style="background:#EAF3DE;color:#27500A;padding:.2rem .75rem;border-radius:50px;font-size:.75rem;font-weight:600">{{ res.estado|title }}</span>
+          {% else %}
+            <span style="background:#FAEEDA;color:#633806;padding:.2rem .75rem;border-radius:50px;font-size:.75rem;font-weight:600">{{ res.estado|title }}</span>
+          {% endif %}
+        </div>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding-top:1rem;border-top:1px solid var(--border)">
+        <div style="font-size:.8rem;color:var(--text-muted)">
+          Código: {{ res.codigo|stringformat:"s"|slice:":8"|upper }}
+        </div>
+        <a href="{% url 'confirmacion' res.codigo %}" class="btn" style="padding:.5rem 1.25rem;font-size:.85rem;border:2px solid #8B6000;color:#5A3200;font-weight:600;border-radius:50px">
+          Ver boletos ›
+        </a>
+      </div>
+    </div>
+    {% endfor %}
+  {% else %}
+    <div style="text-align:center;padding:4rem 2rem;color:var(--text-muted)">
+      <div style="font-size:3rem;margin-bottom:1rem">✈</div>
+      <div style="font-family:var(--font-serif);font-size:1.5rem;color:#3D1F00;margin-bottom:.5rem">No tienes reservaciones aún</div>
+      <p style="margin-bottom:2rem">¡Reserva tu primer vuelo con LUX AIR!</p>
+      <a href="{% url 'buscar_vuelos' %}" class="btn btn-gold">Buscar vuelos ✦</a>
+    </div>
+  {% endif %}
+
+  <!-- SOLICITUDES GRUPALES -->
+  {% if solicitudes_grupales %}
+  <div class="card" style="padding:2rem;margin-top:2rem;border:1.5px solid #C8A030">
+    <h3 style="font-family:var(--font-serif);font-size:1.3rem;color:#3D1F00;margin-bottom:1rem">✈ Solicitudes Grupales</h3>
+    {% for sol in solicitudes_grupales %}
+    <div style="padding:.75rem 0;border-bottom:1px solid var(--border);font-size:.9rem">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <strong style="color:#3D1F00">{{ sol.nombre_contacto }}</strong>
+          <span style="color:var(--text-muted);margin-left:.5rem">{{ sol.num_pasajeros }} pasajeros</span>
+        </div>
+        <div style="color:var(--text-muted)">{{ sol.fecha_solicitud|date:"d M Y" }}</div>
+        {% if sol.atendida %}
+          <span style="background:#EAF3DE;color:#27500A;padding:.2rem .75rem;border-radius:50px;font-size:.75rem">✔ Atendida</span>
+        {% else %}
+          <span style="background:#FFF8E1;color:#8B5A00;padding:.2rem .75rem;border-radius:50px;font-size:.75rem">⏳ En proceso</span>
+        {% endif %}
+      </div>
+      {% for res in sol.reservacion_grupal.all %}
+      <div style="margin-top:.75rem;padding:1rem;background:#FFFDF7;border-radius:8px;border:1px solid #C8A030">
+        <div style="display:flex;justify-content:space-between;font-size:.9rem;margin-bottom:.5rem">
+          <span style="color:var(--text-muted)">Estado</span>
+          <strong style="color:#3D1F00">{{ res.get_estado_display }}</strong>
+        </div>
+        {% if res.precio_cotizado %}
+        <div style="display:flex;justify-content:space-between;font-size:.9rem;margin-bottom:.5rem">
+          <span style="color:var(--text-muted)">Precio cotizado</span>
+          <strong style="color:#8B5A00">${{ res.precio_cotizado|floatformat:2 }}</strong>
+        </div>
+        {% endif %}
+        {% if res.notas %}
+        <div style="font-size:.85rem;color:var(--text-muted);margin-top:.5rem">
+          📋 {{ res.notas }}
+        </div>
+        {% endif %}
+        {% if res.precio_cotizado and res.estado == 'cotizacion' %}
+        <form method="POST" action="{% url 'pagar_grupal' res.id %}">
+          {% csrf_token %}
+          <button type="submit"
+            style="width:100%;margin-top:.75rem;padding:.75rem;background:linear-gradient(135deg,#8B5A00,#C8A030);color:#fff;border:none;border-radius:8px;font-size:.9rem;font-family:var(--font-serif);cursor:pointer">
+            ✦ Aceptar y Pagar ${{ res.precio_cotizado|floatformat:2 }}
+          </button>
+        </form>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}

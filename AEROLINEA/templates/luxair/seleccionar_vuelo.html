@@ -1,0 +1,61 @@
+{% extends 'luxair/base.html' %}
+{% block title %}Seleccionar Vuelo — LUX AIR{% endblock %}
+{% block content %}
+<div style="max-width:800px;margin:5rem auto;padding:0 2rem">
+  <div class="card" style="padding:2rem">
+    <h2 style="font-family:var(--font-serif);font-size:1.8rem;margin-bottom:1.5rem">
+      Confirma tu selección ✦
+    </h2>
+
+    <!-- DETALLE DEL VUELO -->
+    <div style="background:var(--cream);border-radius:12px;padding:1.5rem;margin-bottom:1.5rem">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div style="text-align:center">
+          <div style="font-family:var(--font-serif);font-size:2.5rem;color:var(--midnight)">{{ vuelo_ida.origen.codigo_iata }}</div>
+          <div style="font-size:.8rem;color:var(--text-muted)">{{ vuelo_ida.origen.ciudad }}</div>
+          <div style="font-size:1rem;font-weight:500">{{ vuelo_ida.fecha_salida|time:"H:i" }}</div>
+        </div>
+        <div style="text-align:center;color:var(--gold);font-size:1.5rem">✈</div>
+        <div style="text-align:center">
+          <div style="font-family:var(--font-serif);font-size:2.5rem;color:var(--midnight)">{{ vuelo_ida.destino.codigo_iata }}</div>
+          <div style="font-size:.8rem;color:var(--text-muted)">{{ vuelo_ida.destino.ciudad }}</div>
+          <div style="font-size:1rem;font-weight:500">{{ vuelo_ida.fecha_llegada|time:"H:i" }}</div>
+        </div>
+      </div>
+      <div style="margin-top:1rem;font-size:.85rem;color:var(--text-muted)">
+        Vuelo LX{{ vuelo_ida.numero_vuelo }} · {{ vuelo_ida.fecha_salida|date:"d M Y" }}
+      </div>
+    </div>
+
+    <!-- SELECCIÓN DE CLASE -->
+    <form method="post">
+      {% csrf_token %}
+      <input type="hidden" name="vuelo_regreso_id" value="{{ vuelo_regreso.id }}">
+      <h3 style="font-family:var(--font-serif);font-size:1.3rem;margin-bottom:1rem">Elige tu clase</h3>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.5rem">
+        <label style="border:2px solid var(--border);border-radius:12px;padding:1.25rem;cursor:pointer;text-align:center;transition:all .2s" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--border)'">
+          <input type="radio" name="clase" value="economica" style="display:none">
+          <div style="font-size:1.5rem">🌿</div>
+          <div style="font-family:var(--font-serif);font-size:1.1rem;margin:.5rem 0">Económica</div>
+          <div style="color:var(--rose-dark);font-weight:600">${{ precios.economica|floatformat:0 }}</div>
+        </label>
+        <label style="border:2px solid var(--gold);border-radius:12px;padding:1.25rem;cursor:pointer;text-align:center;background:rgba(212,175,55,.05)">
+          <input type="radio" name="clase" value="ejecutiva" checked style="display:none">
+          <div style="font-size:1.5rem">💎</div>
+          <div style="font-family:var(--font-serif);font-size:1.1rem;margin:.5rem 0">Ejecutiva</div>
+          <div style="color:var(--rose-dark);font-weight:600">${{ precios.ejecutiva|floatformat:0 }}</div>
+        </label>
+        <label style="border:2px solid var(--border);border-radius:12px;padding:1.25rem;cursor:pointer;text-align:center;transition:all .2s" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--border)'">
+          <input type="radio" name="clase" value="primera_clase" style="display:none">
+          <div style="font-size:1.5rem">👑</div>
+          <div style="font-family:var(--font-serif);font-size:1.1rem;margin:.5rem 0">Primera Clase</div>
+          <div style="color:var(--rose-dark);font-weight:600">${{ precios.primera_clase|floatformat:0 }}</div>
+        </label>
+      </div>
+      <button type="submit" class="btn btn-gold" style="width:100%;padding:.9rem;font-size:1rem;border-radius:12px">
+        Continuar con pasajeros ›
+      </button>
+    </form>
+  </div>
+</div>
+{% endblock %}

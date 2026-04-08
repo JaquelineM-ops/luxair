@@ -1,0 +1,79 @@
+{% extends 'luxair/base.html' %}
+{% block title %}Mi Perfil — LUX AIR{% endblock %}
+{% block content %}
+<div style="max-width:700px;margin:5rem auto;padding:0 2rem">
+  <h2 style="font-family:var(--font-serif);font-size:2rem;margin-bottom:.5rem;color:#3D1F00">
+    Mi Perfil ✦
+  </h2>
+  <p style="color:var(--text-muted);margin-bottom:2rem">Actualiza tu información personal.</p>
+
+  <div class="card" style="padding:2rem;border:1.5px solid #C8A030">
+    <form method="POST">
+      {% csrf_token %}
+
+      <div class="grid-2" style="gap:1.25rem;margin-bottom:1.25rem">
+        <div>
+          <label style="font-size:.85rem;color:var(--text-muted);display:block;margin-bottom:.4rem">Nombre(s)</label>
+          <input type="text" name="first_name" value="{{ user.first_name }}"
+            style="width:100%;padding:.75rem 1rem;border:1.5px solid #C8A030;border-radius:8px;font-size:1rem;background:#FFFDF7;color:#3D1F00;box-sizing:border-box">
+        </div>
+        <div>
+          <label style="font-size:.85rem;color:var(--text-muted);display:block;margin-bottom:.4rem">Apellidos</label>
+          <input type="text" name="last_name" value="{{ user.last_name }}"
+            style="width:100%;padding:.75rem 1rem;border:1.5px solid #C8A030;border-radius:8px;font-size:1rem;background:#FFFDF7;color:#3D1F00;box-sizing:border-box">
+        </div>
+      </div>
+
+      <div style="margin-bottom:1.25rem">
+        <label style="font-size:.85rem;color:var(--text-muted);display:block;margin-bottom:.4rem">Correo electrónico</label>
+        <input type="email" value="{{ user.email }}" disabled
+          style="width:100%;padding:.75rem 1rem;border:1.5px solid #C8A030;border-radius:8px;font-size:1rem;background:#F5F5F5;color:#999;box-sizing:border-box">
+      </div>
+
+      <div class="grid-2" style="gap:1.25rem;margin-bottom:1.25rem">
+        <div>
+          <label style="font-size:.85rem;color:var(--text-muted);display:block;margin-bottom:.4rem">Teléfono</label>
+          <input type="text" name="telefono" value="{{ user.telefono }}"
+            style="width:100%;padding:.75rem 1rem;border:1.5px solid #C8A030;border-radius:8px;font-size:1rem;background:#FFFDF7;color:#3D1F00;box-sizing:border-box">
+        </div>
+        <div style="margin-bottom:1.25rem">
+  <label style="font-size:.85rem;color:var(--text-muted);display:block;margin-bottom:.4rem">Domicilio</label>
+  <input type="text" name="domicilio" value="{{ user.domicilio }}"
+    style="width:100%;padding:.75rem 1rem;border:1.5px solid #C8A030;border-radius:8px;font-size:1rem;background:#FFFDF7;color:#3D1F00;box-sizing:border-box"
+    placeholder="Calle, número, colonia, ciudad">
+</div>
+        <div>
+          <label style="font-size:.85rem;color:var(--text-muted);display:block;margin-bottom:.4rem">Fecha de nacimiento</label>
+          <input type="date" name="fecha_nacimiento" value="{{ user.fecha_nacimiento|date:'Y-m-d' }}"
+            style="width:100%;padding:.75rem 1rem;border:1.5px solid #C8A030;border-radius:8px;font-size:1rem;background:#FFFDF7;color:#3D1F00;box-sizing:border-box">
+        </div>
+      </div>
+
+      <div style="margin-bottom:1.25rem">
+        <label style="font-size:.85rem;color:var(--text-muted);display:block;margin-bottom:.4rem">Género</label>
+        <select name="genero"
+          style="width:100%;padding:.75rem 1rem;border:1.5px solid #C8A030;border-radius:8px;font-size:1rem;background:#FFFDF7;color:#3D1F00;box-sizing:border-box">
+          <option value="M" {% if user.genero == 'M' %}selected{% endif %}>Masculino</option>
+          <option value="F" {% if user.genero == 'F' %}selected{% endif %}>Femenino</option>
+          <option value="O" {% if user.genero == 'O' %}selected{% endif %}>Otro</option>
+        </select>
+      </div>
+
+      {% if messages %}
+        {% for message in messages %}
+          <p style="color:#27500A;font-size:.875rem;margin-bottom:1rem">✦ {{ message }}</p>
+        {% endfor %}
+      {% endif %}
+
+      <button type="submit"
+        style="width:100%;padding:.9rem;background:linear-gradient(135deg,#8B5A00,#C8A030);color:#fff;border:none;border-radius:8px;font-size:1rem;font-family:var(--font-serif);cursor:pointer;letter-spacing:.05em">
+        Guardar cambios ✦
+      </button>
+    </form>
+  </div>
+
+  <div style="text-align:center;margin-top:1.5rem">
+    <a href="{% url 'mi_cuenta' %}" style="color:var(--text-muted);font-size:.9rem">← Volver a Mi Cuenta</a>
+  </div>
+</div>
+{% endblock %}
