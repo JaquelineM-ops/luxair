@@ -28,10 +28,10 @@
     </div>
 
     <!-- SELECCIÓN DE CLASE -->
-  <form method="post">
-    {% csrf_token %}
-    <input type="hidden" name="vuelo_regreso_id" value="{{ vuelo_regreso.id }}">
-    <h3 style="font-family:var(--font-serif);font-size:1.3rem;margin-bottom:1rem">Elige tu clase</h3>
+<form method="post">
+  {% csrf_token %}
+  <input type="hidden" name="vuelo_regreso_id" value="{{ vuelo_regreso.id }}">
+  <h3 style="font-family:var(--font-serif);font-size:1.3rem;margin-bottom:1rem">Elige tu clase</h3>
   <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.5rem">
     
     <label id="label-economica" onclick="seleccionarClase('economica')"

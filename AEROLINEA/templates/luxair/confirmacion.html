@@ -1,5 +1,5 @@
-{% extends 'luxair/base.html' %}
-{% block title %}Confirmación — LUX AIR{% endblock %}
+﻿{% extends 'luxair/base.html' %}
+{% block title %}Confirmación â€” LUX AIR{% endblock %}
 {% block extra_css %}
 <style>
 .confirm-page { padding: 4rem 2rem; max-width: 800px; margin: 0 auto; }
@@ -53,12 +53,7 @@
 }
 .boleto-asiento-num { font-family: var(--font-serif); font-size: 3rem; font-weight: 300; color: var(--rose-dark); line-height: 1; }
 .boleto-asiento-label { font-size: .65rem; text-transform: uppercase; letter-spacing: .1em; color: var(--text-muted); }
-.boleto-qr {
-  width: 80px; height: 80px; background: var(--midnight);
-  border-radius: 6px; display: flex; align-items: center; justify-content: center;
-  color: var(--champagne); font-size: .6rem; text-align: center;
-  letter-spacing: .02em; padding: .5rem;
-}
+.boleto-qr { width: 80px; height: 80px; border-radius: 6px; overflow: hidden; }
 .boleto-code { font-size: .7rem; color: var(--text-muted); font-family: monospace; word-break: break-all; }
 
 .actions { display: flex; gap: 1rem; justify-content: center; margin-top: 2rem; }
@@ -121,9 +116,7 @@
           <div class="boleto-asiento-label">Asiento</div>
           <div class="boleto-asiento-num">{{ boleto.asiento }}</div>
         </div>
-        <div class="boleto-qr">
-          {{ boleto.codigo_boleto|stringformat:"s"|slice:":8"|upper }}
-        </div>
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=80x80&data={{ boleto.codigo_boleto }}" width="80" height="80" style="border-radius:6px">
         <div class="boleto-code">{{ boleto.codigo_boleto }}</div>
       </div>
     </div>
@@ -155,7 +148,7 @@
     </div>
     {% if reservacion.tua_opcion == 'despues' %}
     <div style="background:var(--blush);padding:.75rem 1rem;border-radius:8px;font-size:.82rem;color:var(--rose-dark)">
-      ⚠ Recuerda pagar tu TUA antes del check-in. Puedes hacerlo en mostrador o en línea.
+      âš  Recuerda pagar tu TUA antes del check-in. Puedes hacerlo en mostrador o en línea.
     </div>
     {% endif %}
   </div>
@@ -166,4 +159,15 @@
     <a href="{% url 'inicio' %}" class="btn btn-gold">Volver al inicio</a>
   </div>
 </div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+{% for boleto in boletos %}
+(function(){
+  var el = document.getElementById('qr-{{ boleto.codigo_boleto|stringformat:"s"|slice:":8" }}');
+  if(el){ new QRCode(el, {text:'{{ boleto.codigo_boleto }}', width:80, height:80, colorDark:'#1a0a2e', colorLight:'#ffffff'}); }
+})();
+{% endfor %}
+</script>
 {% endblock %}
+
+
