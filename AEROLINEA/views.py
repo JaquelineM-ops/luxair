@@ -336,6 +336,15 @@ def pago(request):
                     asiento=asientos[i % len(asientos)],
                     clase=seleccion['clase'],
                 )
+                if seleccion.get('vuelo_regreso_id'):
+                    vuelo_regreso = get_object_or_404(Vuelo, id=seleccion['vuelo_regreso_id'])
+                    Boleto.objects.create(
+                        reservacion=reservacion,
+                        pasajero=pasajero,
+                        vuelo=vuelo_regreso,
+                        asiento=asientos[i % len(asientos)],
+                        clase=seleccion['clase'],
+                    )
 
             # Crear pago
             Pago.objects.create(

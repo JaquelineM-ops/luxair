@@ -61,6 +61,7 @@
     <p style="font-family:var(--font-serif);font-size:1.3rem;color:#27500A">¡Check-in confirmado! ✦</p>
     <p style="color:var(--text-muted);font-size:.9rem;margin-top:.5rem">Presenta este código en el aeropuerto.</p>
     <p style="font-family:var(--font-serif);font-size:2rem;color:#8B5A00;margin-top:.75rem;letter-spacing:.15em">{{ reservacion.codigo }}</p>
+    <img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data={{ reservacion.codigo }}" width="120" height="120" style="border-radius:8px;margin-top:1rem">
   </div>
   {% endif %}
 

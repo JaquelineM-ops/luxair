@@ -192,7 +192,7 @@
   {% endif %}
 
   {% for vuelo in vuelos_ida %}
-  <div class="vuelo-card" onclick="window.location='/vuelos/seleccionar/{{ vuelo.id }}/'">
+  <div class="vuelo-card vuelo-ida-href" data-id="{{ vuelo.id }}" onclick="seleccionarIda({{ vuelo.id }}, this)">
     <div class="vuelo-main">
       <div class="vuelo-airport">
         <div class="vuelo-time">{{ vuelo.fecha_salida|time:"H:i" }}</div>
@@ -209,31 +209,32 @@
         <div class="vuelo-ciudad">{{ vuelo.destino.ciudad }}</div>
       </div>
       <div class="vuelo-precios">
-        <div class="precio-opcion" onclick="event.stopPropagation(); window.location='/vuelos/seleccionar/{{ vuelo.id }}/?clase=economica'">
-  <div class="precio-clase">Económica</div>
+        <div class="precio-opcion" onclick="event.stopPropagation(); seleccionarIda({{ vuelo.id }}, this.closest('.vuelo-card'))">
+  <div class="precio-clase">Economica</div>
   <div class="precio-monto">${{ vuelo.precio_economica|floatformat:0 }}</div>
 </div>
-<div class="precio-opcion" onclick="event.stopPropagation(); window.location='/vuelos/seleccionar/{{ vuelo.id }}/?clase=ejecutiva'">
+<div class="precio-opcion" onclick="event.stopPropagation(); seleccionarIda({{ vuelo.id }}, this.closest('.vuelo-card'))">
   <div class="precio-clase">Ejecutiva</div>
   <div class="precio-monto">${{ vuelo.precio_ejecutiva|floatformat:0 }}</div>
 </div>
-<div class="precio-opcion" onclick="event.stopPropagation(); window.location='/vuelos/seleccionar/{{ vuelo.id }}/?clase=primera_clase'">
-  <div class="precio-clase">1ª Clase</div>
+<div class="precio-opcion" onclick="event.stopPropagation(); seleccionarIda({{ vuelo.id }}, this.closest('.vuelo-card'))">
+  <div class="precio-clase">1a Clase</div>
   <div class="precio-monto">${{ vuelo.precio_primera_clase|floatformat:0 }}</div>
 </div>
       </div>
-      <a href="{% url 'seleccionar_vuelo' vuelo.id %}" class="vuelo-seleccionar">
-        Seleccionar ›
-      </a>
+      <button class="vuelo-seleccionar" onclick="event.stopPropagation(); seleccionarIda({{ vuelo.id }}, this.closest('.vuelo-card'))">Seleccionar ›</button>
     </div>
     <div class="vuelo-numero">Vuelo LX{{ vuelo.numero_vuelo }} · {{ vuelo.fecha_salida|date:"d M Y" }} · {{ vuelo.estado|title }}</div>
   </div>
   {% endfor %}
 
   {% if vuelos_regreso %}
+  <div id="msg-selecciona-regreso" style="display:none;background:#FFF3CD;border:1px solid #C8A030;border-radius:10px;padding:1rem;margin:1.5rem 0;text-align:center;color:#8B5A00">
+    <strong>Paso 2:</strong> Ahora selecciona tu vuelo de regreso
+  </div>
   <h3 style="font-family:var(--font-serif);font-size:1.2rem;color:var(--text-muted);margin:2rem 0 1rem">↩ Vuelos de regreso</h3>
   {% for vuelo in vuelos_regreso %}
-  <div class="vuelo-card">
+  <div class="vuelo-card" onclick="seleccionarRegreso({{ vuelo.id }}, this)">
     <div class="vuelo-main">
       <div class="vuelo-airport">
         <div class="vuelo-time">{{ vuelo.fecha_salida|time:"H:i" }}</div>
@@ -258,12 +259,21 @@
           <div class="precio-clase">Ejecutiva</div>
           <div class="precio-monto">${{ vuelo.precio_ejecutiva|floatformat:0 }}</div>
         </div>
+        <div class="precio-opcion">
+          <div class="precio-clase">1ª Clase</div>
+          <div class="precio-monto">${{ vuelo.precio_primera_clase|floatformat:0 }}</div>
+        </div>
       </div>
-      <button class="vuelo-seleccionar">Seleccionar ›</button>
+      <button class="vuelo-seleccionar" onclick="event.stopPropagation(); seleccionarRegreso({{ vuelo.id }}, this.closest('.vuelo-card'))">Seleccionar ›</button>
     </div>
     <div class="vuelo-numero">Vuelo LX{{ vuelo.numero_vuelo }} · {{ vuelo.fecha_salida|date:"d M Y" }}</div>
   </div>
   {% endfor %}
+  <div id="btn-continuar-redondo" style="display:none;margin-top:1.5rem;text-align:center">
+    <a id="link-continuar-redondo" href="#" class="btn btn-gold" style="padding:.9rem 2rem;font-size:1rem">
+      Continuar con vuelo seleccionado ›
+    </a>
+  </div>
   {% endif %}
 </div>
 
@@ -280,6 +290,37 @@
 {% endblock %}
 {% block extra_js %}
 <script>
+var idaSeleccionada = null;
+
+function seleccionarIda(vuelo_id, card) {
+  document.querySelectorAll('.vuelo-card').forEach(c => c.style.borderColor = '');
+  card.style.borderColor = 'var(--gold)';
+  idaSeleccionada = vuelo_id;
+  var tieneRegreso = document.getElementById('msg-selecciona-regreso');
+  if(tieneRegreso) {
+    tieneRegreso.style.display = 'block';
+    tieneRegreso.scrollIntoView({behavior:'smooth'});
+    document.getElementById('btn-continuar-redondo').style.display = 'none';
+  } else {
+    window.location = '/vuelos/seleccionar/' + vuelo_id + '/';
+  }
+}
+
+function seleccionarRegreso(vuelo_regreso_id, card) {
+  document.querySelectorAll('.vuelo-card').forEach(c => c.style.borderColor = '');
+  card.style.borderColor = 'var(--rose)';
+  // Tomar el primer vuelo de ida seleccionado
+  var vueloIdaId = document.querySelector('.vuelo-ida-id') ? document.querySelector('.vuelo-ida-id').value : null;
+  var cards = document.querySelectorAll('[data-vuelo-ida]');
+  if(cards.length > 0) vueloIdaId = cards[0].dataset.vueloIda;
+  var btnDiv = document.getElementById('btn-continuar-redondo');
+  var link = document.getElementById('link-continuar-redondo');
+  btnDiv.style.display = 'block';
+  // El link lleva al primer vuelo de ida con el regreso como parámetro
+  var primeraIda = document.querySelector('.vuelo-ida-href');
+  var idaId = primeraIda ? primeraIda.dataset.id : '';
+  link.href = '/vuelos/seleccionar/' + idaSeleccionada + '/?vuelo_regreso_id=' + vuelo_regreso_id;
+}
 function setTrip(tipo, btn) {
   document.querySelectorAll('.trip-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
