@@ -425,6 +425,15 @@ def vuelo_grupal(request):
         comentarios = request.POST.get('comentarios', '').strip()
 
         if nombre and email and telefono and num_pas:
+            from .models import SolicitudGrupal
+            SolicitudGrupal.objects.create(
+                usuario=request.user if request.user.is_authenticated else None,
+                nombre_contacto=nombre,
+                email=email,
+                telefono=telefono,
+                num_pasajeros=int(num_pas),
+                comentarios=comentarios,
+            )
             messages.success(request, '¡Tu solicitud grupal fue enviada! Un agente LUX AIR te contactará pronto. 🌟')
             return redirect('inicio')
         else:
